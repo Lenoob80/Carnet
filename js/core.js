@@ -155,6 +155,7 @@ document.addEventListener('click',function(e){
  if(ac=='img'){$('fImg').click();return}
  if(ac=='xls'){$('fXls').click();return}
  if(ac=='pdf'){makePdf();return}
+ if(ac=='save'){saveNow();return}
  if(ac=='focus'){document.body.classList.toggle('focus');return}
  if(ac=='tb'){newText(30,nextY());return}
  var p2=pg();if(!p2)return;ser();
@@ -189,35 +190,7 @@ $('dOk').onclick=function(){
  save();$('dlg').close();render()
 };
 var TH=[],sel=null,sr=null,rangeMode=false;
-var FONTS=['Calibri','Arial','Verdana','Georgia','Times New Roman','Courier New','Comic Sans MS','Gabriola','Impact'],
-    SIZES=[8,9,10,11,12,14,16,18,20,24,28,32,40,48],
-    SWATCH=['#fff2a8','#b7e4a7','#f5b5b5','#b5d4f5'];
-function fbtn(attr,txt,title){return '<button class="btn sm" '+attr+(title?' title="'+title+'"':'')+'>'+txt+'</button>'}
-function fgrp(label,html){return '<div class="fg"><span class="fl">'+label+'</span><div class="fr">'+html+'</div></div>'}
-var FB='<div id="fb">'+[
-  fgrp('Historique',
-    fbtn('data-f="undo"','↶','Annuler (Ctrl+Z)')+fbtn('data-f="redo"','↷','Rétablir (Ctrl+Y)')),
-  fgrp('Insérer',
-    fbtn('data-a="tb"','T Texte','Zone de texte (ou double-clic sur la page)')+fbtn('data-a="img"','🖼 Image')+
-    fbtn('data-a="xls"','📊 Excel / CSV')+fbtn('data-a="ntab"','▦ Tableau')+'%T%'+fbtn('data-f="cb"','☑ Case','Case à cocher')),
-  fgrp('Texte',
-    '<select id="fF"><option value="">Police</option>'+FONTS.map(function(f){return '<option>'+f+'</option>'}).join('')+'</select>'+
-    '<select id="fS"><option value="">Taille</option>'+SIZES.map(function(n){return '<option>'+n+'</option>'}).join('')+'</select>'+
-    fbtn('data-f="b"','<b>G</b>','Gras (Ctrl+B)')+fbtn('data-f="i"','<i>I</i>','Italique (Ctrl+I)')+fbtn('data-f="u"','<u>S</u>','Souligné (Ctrl+U)')+
-    fbtn('data-f="l"','⇤','Aligner à gauche')+fbtn('data-f="c"','↔','Centrer')+fbtn('data-f="r"','⇥','Aligner à droite')),
-  fgrp('Couleurs',
-    '<label title="Couleur du texte">A <input type="color" id="cT" value="#000000"></label>'+
-    '<label title="Surlignage du texte">🖍 <input type="color" id="cH" value="#ffff00"></label>'+
-    '<label title="Fond de cellule">▨ <input type="color" id="cB" value="#ffffff"></label>'+
-    SWATCH.map(function(c){return '<button class="sw" data-q="'+c+'" style="background:'+c+'" title="Couleur rapide"></button>'}).join('')+
-    fbtn('data-q=""','✕','Retirer la couleur')),
-  fgrp('Tableau',
-    fbtn('data-t="ar"','+ Ligne')+fbtn('data-t="ac"','+ Colonne')+fbtn('data-t="dr"','– Ligne')+fbtn('data-t="dc"','– Colonne')+
-    fbtn('data-t="m"','Fusionner')+fbtn('data-t="s"','Scinder')+fbtn('data-t="x"','⬚ Plage','Étendre la sélection : touche ensuite la cellule de fin')+fbtn('data-t="g"','Griser')+
-    fbtn('data-t="d"','📅 Dates auto','Remplir les cellules sélectionnées avec des dates')),
-  fgrp('Page',
-    fbtn('data-a="focus"','⤢ Focus','Masquer / afficher les colonnes de gauche')+fbtn('data-a="pdf"','⬇ PDF','Télécharger la page en PDF'))
-].join('')+'</div>';
+
 function clean(h){return h.replace(/class="([^"]*)"/g,function(m,v){v=v.split(/\s+/).filter(function(x){return x&&x!='ms'}).join(' ');return v?'class="'+v+'"':''})}
 function tabHtml(cols,rows){return '<table class="w"><thead><tr>'+cols.map(function(c){return '<th contenteditable>'+c+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td contenteditable'+(c.g?' class="g"':'')+'>'+c.t+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'}
 function tabify(p){if(p.cols){p.tab=tabHtml(p.cols,p.rows);delete p.cols;delete p.rows}return p}
