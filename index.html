@@ -77,6 +77,7 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--bg);colo
 .cb{cursor:pointer;user-select:none}.cdone{text-decoration:line-through;opacity:.6}
 .dot{cursor:pointer;font-style:normal;padding:0 3px;color:var(--muted)}.dot.s1{color:#e8922a}.dot.s2{color:#2ba84a}
 .box:focus{outline:none}
+.pg span{white-space:normal;overflow-wrap:anywhere}
 body.focus #secs,body.focus #pgs{display:none}
 .gp{cursor:grab;touch-action:none;color:var(--muted);padding:0 4px;font-style:normal;user-select:none}
 .pg.dt,.sec.dt{box-shadow:inset 0 2px 0 var(--accent)}.pg.db,.sec.db{box-shadow:inset 0 -2px 0 var(--accent)}.sec.dm{outline:2px solid var(--accent)}
@@ -151,7 +152,10 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
  <h3 style="margin:0 0 6px">Pré-créer des pages hebdomadaires</h3>
  <p style="margin:0;color:var(--muted)">Les matières sont copiées depuis la page ouverte (ou le modèle par défaut).</p>
  <label>Nom après le numéro</label><input id="dPre" value="Rapport BTS">
- <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="dDt" checked style="width:auto"> Afficher les dates (colonnes et sous-titre)</label>
+ <label>Semaines regroupées (facultatif)</label><input id="dL" placeholder="ex. 37, 39, 41, 42-43-44, 45, 1-2-3" autocomplete="off">
+ <p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Si rempli, remplace début / fin / pas. « 42-44 » = de 42 à 44 (42-43-44). Les numéros qui repartent à 1 passent à l’année suivante.</p>
+ <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="dDt" checked style="width:auto"> Afficher les dates (sous-titre et jours)</label>
+ <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="dTb" style="width:auto"> Ajouter aussi le tableau de semaine (vide par défaut)</label>
  <div class="row"><div><label>Début : année</label><input id="dY" type="number" value="2026"></div>
  <div><label>Semaine début</label><input id="dA" type="number" value="37"></div>
  <div><label>Fin : année</label><input id="dY2" type="number" value="2027"></div>

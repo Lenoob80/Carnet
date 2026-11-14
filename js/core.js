@@ -14,6 +14,23 @@ function wiy(y){return isoW(Date.UTC(y,11,28))}
 function monday(y,w){var j4=new Date(Date.UTC(y,0,4)),d=j4.getUTCDay()||7,m=new Date(j4);m.setUTCDate(j4.getUTCDate()-d+1+(w-1)*7);return m}
 function add(d,n){var x=new Date(d);x.setUTCDate(x.getUTCDate()+n);return x}
 function fmt(d){return String(d.getUTCDate()).padStart(2,'0')+' '+MOIS[d.getUTCMonth()]}
+/* semaines regroupées : "37, 39, 42-43-44, 45" ; "42-44" = de 42 à 44 */
+function parseWeeks(t){
+  return t.split(/[,;\s]+/).filter(Boolean).map(function(tok){
+    var n=tok.split('-').map(Number).filter(function(x){return x>0&&x<54});
+    if(n.length==2&&n[1]>n[0]+1){var r=[];for(var i=n[0];i<=n[1];i++)r.push(i);return r}
+    return n;
+  }).filter(function(g){return g.length});
+}
+function weekGroup(pre,wks,subj,nd){
+  if(wks.length==1)return weekPage(pre,wks[0].y,wks[0].w,subj,nd);
+  var f=wks[0],l=wks[wks.length-1],end=add(monday(l.y,l.w),4),
+      list=wks.map(function(x){return x.w}),
+      p=weekPage(pre,f.y,f.w,subj,false);
+  p.title='S'+list.join('-')+' '+pre;
+  p.sub='Semaines '+list.join(', ')+(nd===false?'':' : du '+fmt(monday(f.y,f.w))+' au '+fmt(end)+' '+end.getUTCFullYear());
+  return p;
+}
 function blank(t){return {id:uid(),title:t||'Nouvelle page',sub:'',cols:null,rows:null,boxes:[]}}
 function weekPage(pre,y,w,subj,nd){
  var m=monday(y,w),cols=['Matières'];
@@ -144,7 +161,24 @@ $('dOk').onclick=function(){
  ser();var s=sec();if(!s)return;
  var pre=$('dPre').value,y=+$('dY').value,y2=+$('dY2').value,a=+$('dA').value,b=+$('dB').value,st=Math.max(1,+$('dS').value);
  var cur=pg(),subj=subjOf(cur),ex=s.pages.map(function(p){return p.title+'|'+(p.y||2026)});
- var w=a,c=0;while((y*100+w)<=(y2*100+b)&&c++<150){var np=weekPage(pre,y,w,subj,$('dDt').checked);if(ex.indexOf(np.title+'|'+y)<0)s.pages.push(tabify(np));w+=st;while(w>wiy(y)){w-=wiy(y);y++}}
+ function addP(np,key){
+  if(!$('dTb').checked){delete np.cols;delete np.rows}
+  if(ex.indexOf(np.title+'|'+key)<0){ex.push(np.title+'|'+key);s.pages.push(tabify(np))}
+ }
+ var lst=parseWeeks($('dL').value);
+ if(lst.length){                      // semaines regroupées : 37, 39, 42-43-44, 45…
+  var yy=y,prev=0;
+  lst.forEach(function(g){
+   var wks=g.map(function(n){if(n<prev)yy++;prev=n;return {w:n,y:yy}});
+   addP(weekGroup(pre,wks,subj,$('dDt').checked),wks[0].y);
+  });
+ }else{                               // série régulière (début, fin, pas)
+  var w=a,c=0;
+  while((y*100+w)<=(y2*100+b)&&c++<150){
+   addP(weekPage(pre,y,w,subj,$('dDt').checked),y);
+   w+=st;while(w>wiy(y)){w-=wiy(y);y++}
+  }
+ }
  save();$('dlg').close();render()
 };
 var TH=[],sel=null,sr=null,rangeMode=false;
