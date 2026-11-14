@@ -54,8 +54,21 @@ function mS(b,l,r){var o=Object.assign({},l);o.name=pick(b,l,r,'name');o.color=p
 function mN(b,l,r){var o=Object.assign({},l);o.name=pick(b,l,r,'name');o.sections=mArr(b?b.sections:[],l.sections,r.sections,mS);return o}
 function cids(){var n=nb(),s=n&&n.sections[D.cur.s],p=s&&s.pages[D.cur.p];return [n&&n.id,s&&s.id,p&&p.id]}
 function relocate(c){var ni=D.nbs.findIndex(function(x){return x.id==c[0]});if(ni<0)return;var n=D.nbs[ni],si=n.sections.findIndex(function(x){return x.id==c[1]});if(si<0){D.cur={n:ni,s:0,p:0};return}var pi=n.sections[si].pages.findIndex(function(x){return x.id==c[2]});D.cur={n:ni,s:si,p:Math.max(0,pi)}}
-function editing(){var a=document.activeElement;return !!(a&&a.closest&&a.closest('#page'))}
-async function cache(){if(!K)return;try{await kvSet('data',await seal({v:1,nbs:D.nbs,cur:D.cur,base:BASE,dirty:dirty}))}catch(e){toast('Stockage local indisponible.')}}
+function editing(){var a=document.activeElement;return !!(a&&a.closest&&a.closest('#page'))||(typeof DR!='undefined'&&DR.on)}
+/* le document synchronisé contient les carnets, la corbeille et les modèles */
+function docStr(){return JSON.stringify({nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[]})}
+function docOf(){return {v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[]}}
+function baseDoc(){var b=null;try{b=BASE?JSON.parse(BASE):null}catch(e){}if(Array.isArray(b))b={nbs:b};return b||{}}
+function keepLocal(b,l,r){return l}
+function adopt(rem){D.nbs=rem.nbs;D.trash=rem.trash||[];D.tpl=rem.tpl||[];BASE=docStr();LH=H(BASE)}
+function mergeDoc(rem){
+  var b=baseDoc();
+  D.nbs=mArr(b.nbs||[],D.nbs,rem.nbs,mN);
+  D.trash=mArr(b.trash||[],D.trash||[],rem.trash||[],keepLocal);
+  D.tpl=mArr(b.tpl||[],D.tpl||[],rem.tpl||[],keepLocal);
+}
+function purgeTrash(){var lim=Date.now()-30*864e5;D.trash=(D.trash||[]).filter(function(e){return e.at>lim})}
+async function cache(){if(!K)return;try{await kvSet('data',await seal({v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[],cur:D.cur,base:BASE,dirty:dirty}))}catch(e){toast('Stockage local indisponible.')}}
 async function persist(){await cache();if(dirty)syncNow()}
 async function syncNow(){
  if(busy||!CFG||!K)return;busy=true;setSt('⟳ Synchronisation…');
@@ -67,12 +80,13 @@ async function syncNow(){
    var rem=await pull();try{ser()}catch(e){}
    var need=dirty,c=cids();
    if(rem&&typeof rem=='object'){
-    if(!dirty){D.nbs=rem.nbs;BASE=JSON.stringify(rem.nbs);LH=H(BASE);relocate(c);needR=true;done=true;break}
-    D.nbs=mArr(BASE?JSON.parse(BASE):[],D.nbs,rem.nbs,mN);relocate(c);needR=true;need=true
+    if(!dirty){adopt(rem);relocate(c);needR=true;done=true;break}
+    mergeDoc(rem);relocate(c);needR=true;need=true
    }else if(rem=='none')need=true;
    if(!need){done=true;break}
-   var snap=JSON.stringify(D.nbs),res=await push({v:1,nbs:D.nbs});
-   if(res=='ok'){BASE=snap;LH=H(snap);dirty=JSON.stringify(D.nbs)!==snap;done=true}else ETAG=null
+   purgeTrash();
+   var snap=docStr(),res=await push(docOf());
+   if(res=='ok'){BASE=snap;LH=H(snap);dirty=docStr()!==snap;done=true}else ETAG=null
   }
   setSt(done?'✓ Synchronisé':'⚠ Conflit, nouvel essai…');
   if(needR&&!editing()){needR=false;render()}
@@ -85,11 +99,11 @@ async function boot(){
  if(!c){c=localStorage.getItem('carnet-data');legacy=!!c}
  if(c){try{loc=await unseal(c)}catch(x){}}
  PEND={};((await kvGet('pend'))||[]).forEach(function(i){PEND[i]=1});
- if(loc){D={cur:loc.cur||{n:0,s:0,p:0},nbs:loc.nbs};BASE=loc.base||null;dirty=!!loc.dirty;ETAG=null}
+ if(loc){D={cur:loc.cur||{n:0,s:0,p:0},nbs:loc.nbs,trash:loc.trash||[],tpl:loc.tpl||[]};BASE=loc.base||null;dirty=!!loc.dirty;ETAG=null}
  else{var rem=await pull();
-  if(rem&&typeof rem=='object'){D={cur:{n:0,s:0,p:0},nbs:rem.nbs};BASE=JSON.stringify(rem.nbs);dirty=false}
-  else{D={cur:{n:0,s:0,p:0},nbs:[newNb('Rapport de stage')]};BASE=null;dirty=true}}
- D.nbs=fix({nbs:D.nbs}).nbs;LH=BASE?H(BASE):0;
+  if(rem&&typeof rem=='object'){D={cur:{n:0,s:0,p:0},nbs:rem.nbs,trash:rem.trash||[],tpl:rem.tpl||[]};BASE=docStr();dirty=false}
+  else{D={cur:{n:0,s:0,p:0},nbs:[newNb('Rapport de stage')],trash:[],tpl:[]};BASE=null;dirty=true}}
+ D.nbs=fix({nbs:D.nbs}).nbs;purgeTrash();LH=BASE?H(BASE):0;
  if(await migImgs())dirty=true;
  render();await cache();if(legacy)localStorage.removeItem('carnet-data');
  $('bL').style.display='';$('bK').style.display='';bump();

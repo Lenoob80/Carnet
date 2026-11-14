@@ -19,7 +19,7 @@ function panel(id,groups){
   return '<div class="tp" data-tp="'+id+'">'+groups.join('')+'</div>';
 }
 
-var TABS=[['home','Accueil'],['insert','Insérer'],['table','Tableau'],['page','Page']];
+var TABS=[['home','Accueil'],['insert','Insérer'],['table','Tableau'],['layout','Disposition'],['page','Page']];
 
 var FB='<div id="fb"><div class="tabs">'+
   TABS.map(function(t){return '<button class="tab" data-tab="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div>'+
@@ -34,6 +34,10 @@ var FB='<div id="fb"><div class="tabs">'+
     fgrp('Couleurs',
       split('text','A','Couleur du texte')+split('hl','🖍','Surlignage')+split('fill','▨','Fond de cellule')+
       fbtn('data-fc="1"','⌫ Effacer le format','Retirer toute la mise en forme')),
+    fgrp('Objets',
+      fbtn('data-o="all"','⬚ Tout','Sélectionner tous les objets de la page (Ctrl+A)')+
+      fbtn('data-o="dup"','⧉ Dupliquer','Dupliquer la sélection (Ctrl+D)')+
+      fbtn('data-o="del"','🗑 Supprimer <span id="selN"></span>','Supprimer la sélection (Suppr)')),
     fgrp('Paragraphe',
       fbtn('data-f="l"','⇤','Aligner à gauche')+fbtn('data-f="c"','↔','Centrer')+fbtn('data-f="r"','⇥','Aligner à droite')+
       fbtn('data-f="cb"','☑ Case','Insérer une case à cocher'))
@@ -41,8 +45,13 @@ var FB='<div id="fb"><div class="tabs">'+
 
   panel('insert',[
     fgrp('Ajouter',
-      fbtn('data-a="tb"','T Texte','Zone de texte (ou double-clic sur la page)')+fbtn('data-a="img"','🖼 Image')+
-      fbtn('data-a="xls"','📊 Excel / CSV')+fbtn('data-a="ntab"','▦ Tableau')+'%T%')
+      fbtn('data-a="tb"','T Texte','Zone de texte (ou double-clic sur la page)')+fbtn('data-a="img"','🖼 Image','Ou glisse des images depuis l’ordinateur sur la page')+
+      fbtn('data-a="xls"','📊 Excel / CSV','Ou glisse le fichier sur la page')+fbtn('data-a="ntab"','▦ Tableau')+'%T%'),
+    fgrp('Dessin',
+      fbtn('data-a="draw"','✏ Dessiner','Dessin à main levée (souris, doigt ou stylet)')),
+    fgrp('Liens',
+      fbtn('data-a="link"','🔗 Lien vers une page','Insère un lien cliquable vers une autre page')+
+      fbtn('data-a="toc"','📑 Sommaire','Crée (ou met à jour) un sommaire des pages'))
   ])+
 
   panel('table',[
@@ -55,11 +64,31 @@ var FB='<div id="fb"><div class="tabs">'+
       fbtn('data-t="d"','📅 Dates auto','Remplir les cellules sélectionnées avec des dates'))
   ])+
 
+  panel('layout',[
+    fgrp('Ordre',
+      fbtn('data-o="front"','⤒ Premier plan')+fbtn('data-o="fwd"','↑ Avancer')+fbtn('data-o="bwd"','↓ Reculer')+fbtn('data-o="back"','⤓ Arrière-plan')),
+    fgrp('Verrou',
+      fbtn('data-o="lock"','🔒 Verrouiller','L’objet ne bouge plus et ne se supprime plus')+fbtn('data-o="unlock"','🔓 Déverrouiller')),
+    fgrp('Aligner',
+      fbtn('data-o="al_l"','Gauche')+fbtn('data-o="al_c"','Centre')+fbtn('data-o="al_r"','Droite')+
+      fbtn('data-o="al_t"','Haut')+fbtn('data-o="al_m"','Milieu')+fbtn('data-o="al_b"','Bas')),
+    fgrp('Répartir',
+      fbtn('data-o="dist_h"','⇔ Horizontal','Espaces égaux (3 objets ou plus)')+fbtn('data-o="dist_v"','⇕ Vertical')),
+    fgrp('Repères',
+      fbtn('data-o="snap"','🧲 Magnétisme','Les objets s’accrochent aux bords des autres')+fbtn('data-o="grid"','▦ Grille','Affiche une grille et y accroche les objets'))
+  ])+
+
   panel('page',[
     fgrp('Affichage',
-      fbtn('data-a="focus"','⤢ Focus','Masquer / afficher les colonnes de gauche')),
+      fbtn('data-a="focus"','⤢ Focus','Masquer / afficher les colonnes de gauche')+fbtn('data-a="wc"','🔢 Mots','Nombre de mots et de caractères')),
     fgrp('Document',
-      fbtn('data-a="pdf"','⬇ PDF','Télécharger la page en PDF')+fbtn('data-a="save"','💾 Enregistrer','Enregistrer et synchroniser (Ctrl+S)'))
+      fbtn('data-a="pdf"','⬇ PDF','Télécharger la page en PDF')+fbtn('data-a="save"','💾 Enregistrer','Enregistrer et synchroniser (Ctrl+S)')),
+    fgrp('Carnet',
+      fbtn('data-a="tpl"','📋 Modèles','Enregistrer une page type, créer une page depuis un modèle')+
+      fbtn('data-a="todo"','☑ À faire','Toutes les cases non cochées de tous les carnets')+
+      fbtn('data-a="trash"','🗑 Corbeille','Pages, sections et carnets supprimés (30 jours)')),
+    fgrp('Application',
+      fbtn('data-a="install"','📲 Installer','Ajouter le carnet à l’écran d’accueil'))
   ])+
 '</div>';
 

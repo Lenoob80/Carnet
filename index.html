@@ -4,7 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mon carnet</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src data: blob:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'; frame-src about:">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Carnet">
+<meta name="theme-color" content="#1c1f23">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; frame-src about:">
 <style>
 :root{--bg:#fff;--side:#e8eef2;--text:#1f2328;--muted:#6b7580;--line:#c9d1d8;--head:#f1f1f1;--gray:#808080;--accent:#7719aa;--sel:#e6e6e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1f23;--side:#262b31;--text:#e6e8ea;--muted:#9aa4ae;--line:#434b54;--head:#2b3036;--gray:#555b62;--accent:#c58af0;--sel:#3a4047;color-scheme:dark}}
@@ -14,6 +23,10 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif;min-height:100vh}
 #app{display:flex;min-height:100vh}
 #secs{width:220px;background:var(--side);padding:12px 8px;flex:none}
+html{-webkit-text-size-adjust:100%}
+#sa{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#1c1f23;z-index:200;pointer-events:none}
+.standalone [data-a="install"]{display:none!important}
+#lock{padding-top:calc(16px + env(safe-area-inset-top,0px))!important}
 #pgs{width:250px;border-right:1px solid var(--line);padding:12px 8px;flex:none}
 main{flex:1;min-width:0;padding:20px 24px}
 #nsel{width:100%;padding:7px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-weight:600}
@@ -77,6 +90,32 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--bg);colo
 .cb{cursor:pointer;user-select:none}.cdone{text-decoration:line-through;opacity:.6}
 .dot{cursor:pointer;font-style:normal;padding:0 3px;color:var(--muted)}.dot.s1{color:#e8922a}.dot.s2{color:#2ba84a}
 .box:focus{outline:none}
+#page{isolation:isolate}
+body[data-tab="layout"] .tab[data-tab="layout"]{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+body[data-tab="layout"] .tp[data-tp="layout"]{display:flex}
+body[data-snap="1"] [data-o="snap"],body[data-grid="1"] [data-o="grid"]{border-color:var(--accent);background:var(--sel)}
+#page.gridon{background-image:linear-gradient(to right,rgba(128,128,128,.2) 1px,transparent 1px),linear-gradient(to bottom,rgba(128,128,128,.2) 1px,transparent 1px);background-size:20px 20px}
+.box.locked .br{display:none}.box.locked .bh{cursor:default}.box.locked .bh span::after{content:" 🔒"}
+.box[data-k="d"] .bh{position:absolute;top:0;left:0;right:0;z-index:2}
+.dr svg{display:block;width:100%;height:auto}
+.guide{position:absolute;background:#e91e63;pointer-events:none;z-index:9999}
+.guide.gv{width:1px;top:0}.guide.gh{height:1px;left:0}
+.plink{color:var(--accent);cursor:pointer;text-decoration:underline}.plink.dead{color:#d33;text-decoration:line-through;cursor:default}
+#page.dropping{outline:2px dashed var(--accent);outline-offset:-2px}
+#wc{font-size:12px;color:var(--muted);white-space:nowrap;flex:none}
+#dsvg{position:absolute;left:0;top:0;width:100%;z-index:9998;touch-action:none;cursor:crosshair;background:rgba(119,25,170,.04)}
+#dtool{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:90;display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 10px;box-shadow:0 6px 24px rgba(0,0,0,.4);max-width:96vw}
+.dcol{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);padding:0;cursor:pointer}
+.dcol.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+#dtool .btn.on{border-color:var(--accent);background:var(--sel)}
+.dsep{width:1px;height:22px;background:var(--line)}
+#dgen{width:min(680px,94vw)}#mdB{max-height:62vh;overflow:auto}
+.mrow{display:flex;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line)}
+.mrow .mi{flex:1;min-width:0}.mrow small{display:block;color:var(--muted)}
+.mgrp{font-weight:600;margin:12px 0 4px}.mit{padding:6px 8px;cursor:pointer;border-radius:6px}.mit:hover{background:var(--sel)}
+.box.msel{outline:2px solid var(--accent);outline-offset:1px}.box.msel .bh{opacity:1}
+.rband{position:absolute;border:1px dashed var(--accent);background:rgba(119,25,170,.14);z-index:9999;pointer-events:none}
+@media print{.box.msel,.guide{outline:none!important}.guide,#dtool,#dsvg{display:none!important}#page.gridon{background:none!important}}
 body{--c-text:#e53935;--c-hl:#fff176;--c-fill:#fff176}
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 2px}
 .tab{padding:7px 14px;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font:inherit;font-size:13px;white-space:nowrap}
@@ -131,6 +170,7 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 #q{flex:1;min-width:0}
 @media(max-width:760px){
  body{font-size:15px}
+ #wc{display:none}
  #bMenu,#bTools{display:inline-flex;align-items:center;height:36px;padding:0 10px;flex:none}
  #q{height:36px;font-size:16px}
  #app{display:block}
@@ -158,8 +198,9 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 </style>
 </head>
 <body>
-<div id="sbar"><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><div id="res"></div></div>
-<div id="app"><div id="side"><nav id="secs"></nav><nav id="pgs"></nav><div id="stt"><span id="sts"></span><button class="btn sm" id="bT" title="Basculer clair / sombre">🌙</button><button class="btn sm" id="bX">💾 Exporter</button><button class="btn sm" id="bI">📥 Importer</button><button class="btn sm" id="bL" style="display:none">🔒 Verrouiller</button><button class="btn sm" id="bK" style="display:none" title="Changer le jeton GitHub">🔑 Jeton</button></div></div><main id="main"></main></div>
+<div id="sa"></div>
+<div id="sbar"><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><span id="wc" title="Nombre de mots de la page"></span><div id="res"></div></div>
+<div id="app"><div id="side"><nav id="secs"></nav><nav id="pgs"></nav><div id="stt"><span id="sts"></span><button class="btn sm" id="bT" title="Basculer clair / sombre">🌙</button><button class="btn sm" id="bX">💾 Exporter</button><button class="btn sm" id="bI">📥 Importer</button><button class="btn sm" id="bL" style="display:none">🔒 Verrouiller</button><button class="btn sm" data-a="install" title="Installer sur l’écran d’accueil">📲 Installer</button><button class="btn sm" id="bK" style="display:none" title="Changer le jeton GitHub">🔑 Jeton</button></div></div><main id="main"></main></div>
 <div id="bd"></div>
 <input type="file" id="fImg" accept="image/*" multiple hidden><input type="file" id="fXls" accept=".xlsx,.xls,.csv" hidden>
 <div id="lock"><div class="lk"><h2>📓 Mon carnet</h2><p id="lkMsg" style="margin:0;color:var(--muted)"></p>
@@ -194,17 +235,28 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
  <label>Format</label><select id="nF"><option value="c">Lun 07 Sept</option><option value="l">Lundi 07 Septembre</option><option value="n">07/09/2026</option><option value="d">07 Septembre 2026</option><option value="j">Lundi (jour seul, sans date)</option></select>
  <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="nW" checked style="width:auto"> Sans week-end</label></div>
  <div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" id="nNo">Annuler</button><button class="btn" id="nOk" style="border-color:var(--accent)">Créer le tableau</button></div></dialog>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
 <script src="js/core.js"></script>
 <script src="js/tableaux.js"></script>
 <script src="js/excel.js"></script>
 <script src="js/outils.js"></script>
 <script src="js/pdf.js"></script>
 <script src="js/confort.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/selection.js"></script>
+<script src="js/objets.js"></script>
+<script src="js/dessin.js"></script>
+<script src="js/depot.js"></script>
+<script src="js/corbeille.js"></script>
+<script src="js/todo.js"></script>
+<script src="js/modeles.js"></script>
+<script src="js/liens.js"></script>
+<script src="js/mots.js"></script>
 <script src="js/menus.js"></script>
 <script src="js/couleurs.js"></script>
 <script src="js/mobile.js"></script>
+<script src="js/pwa.js"></script>
 <script src="js/synchro.js"></script>
 
 </body>

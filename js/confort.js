@@ -61,15 +61,20 @@ async function saveNow(){
   try{ser();await cache();await syncNow();toast($('sts').textContent||'Enregistré.')}catch(e){}
 }
 function moveBoxKey(e){
-  var a=document.activeElement,b=a&&a.closest&&a.closest('.box');
-  if(!b)return;
-  if(a.closest('.bc')&&!e.altKey)return;          // dans le texte, les flèches déplacent le curseur
+  var a=document.activeElement,inText=a&&a.closest&&a.closest('.bc');
+  if(inText&&!e.altKey)return;                    // dans le texte, les flèches déplacent le curseur
+  var group=selected();                           // la sélection, sinon la zone active
+  if(!group.length){var b=a&&a.closest&&a.closest('.box');if(!b)return;group=[b]}
+  group=group.filter(function(b){return b.dataset.lock!='1'});
+  if(!group.length)return;
   var d=e.shiftKey?10:1,dx=0,dy=0;
   if(e.key=='ArrowLeft')dx=-d;else if(e.key=='ArrowRight')dx=d;
   else if(e.key=='ArrowUp')dy=-d;else if(e.key=='ArrowDown')dy=d;else return;
   e.preventDefault();
-  b.style.left=Math.max(0,b.offsetLeft+dx)+'px';
-  b.style.top=Math.max(0,b.offsetTop+dy)+'px';
+  group.forEach(function(b){
+    b.style.left=Math.max(0,b.offsetLeft+dx)+'px';
+    b.style.top=Math.max(0,b.offsetTop+dy)+'px';
+  });
   fit();clearTimeout(tm);tm=setTimeout(ser,300);
 }
 document.addEventListener('keydown',function(e){

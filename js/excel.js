@@ -70,9 +70,13 @@ function impPlain(buf){
   h+='<table><tbody>'+rows.map(function(r,i){var g=i?'td':'th';return '<tr>'+r.slice(0,mc).map(function(c){return '<'+g+'>'+esc(c)+'</'+g+'>'}).join('')+'</tr>'}).join('')+'</tbody></table>'});
  if(!h)throw 0;addBox('t',30,nextY(),Math.min(720,$('page').offsetWidth-60),h)
 }
-$('fXls').onchange=function(e){
- var f=e.target.files[0];e.target.value='';if(!f||!$('page'))return;
- var fr=new FileReader();fr.onload=function(){var buf=fr.result,go=(/\.xlsx$/i.test(f.name)&&window.JSZip&&window.XLSX)?impX(buf):Promise.reject();
-  go.catch(function(){return impPlain(buf)}).catch(function(){toast('Fichier illisible.')})};
+function importExcelFile(f){
+ if(!f||!$('page'))return;
+ var fr=new FileReader();
+ fr.onload=function(){
+  var buf=fr.result,go=(/\.xlsx$/i.test(f.name)&&window.JSZip&&window.XLSX)?impX(buf):Promise.reject();
+  go.catch(function(){return impPlain(buf)}).catch(function(){toast('Fichier illisible.')})
+ };
  fr.readAsArrayBuffer(f)
-};
+}
+$('fXls').onchange=function(e){var f=e.target.files[0];e.target.value='';importExcelFile(f)};

@@ -6,7 +6,7 @@ function loadScript(src){
   return new Promise(function(ok,ko){
     if(document.querySelector('script[src="'+src+'"]'))return ok();
     var s=document.createElement('script');
-    s.src=src;s.onload=ok;s.onerror=function(){ko(new Error('chargement de la bibliothèque'))};
+    s.src=src;s.crossOrigin='anonymous';s.onload=ok;s.onerror=function(){ko(new Error('chargement de la bibliothèque'))};
     document.head.appendChild(s);
   });
 }
@@ -21,7 +21,7 @@ async function makePdf(){
       onclone:function(doc){
         doc.documentElement.setAttribute('data-theme','light');
         var st=doc.createElement('style');
-        st.textContent='.bh,.br{display:none!important}.box,.box:hover{border-color:transparent!important;background:none!important}.ms{outline:none!important}';
+        st.textContent='.bh,.br{display:none!important}.box,.box:hover{border-color:transparent!important;background:none!important}.ms,.msel{outline:none!important}.guide,#dsvg{display:none!important}#page{background:none!important}';
         doc.head.appendChild(st);
       }
     });
