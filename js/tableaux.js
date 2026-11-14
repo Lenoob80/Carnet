@@ -18,7 +18,7 @@ function merge(){var q=rect();if(!q)return;var f=q.g[q.r1][q.c1].td,o=selCells()
 function split(){var q=rect();if(!q)return;var td=sel.a,x=pos(q.g,td);if(!x||(td.rowSpan<2&&td.colSpan<2))return;var rs=td.rowSpan,cs=td.colSpan;td.rowSpan=1;td.colSpan=1;
  for(var r=x.r;r<x.r+rs;r++)for(var c=x.c;c<x.c+cs;c++){if(r==x.r&&c==x.c)continue;var ref=null,row=q.g[r]||[];for(var k=c+1;k<row.length;k++){var y=row[k];if(y&&y.r==r&&y.td!==td){ref=y.td;break}}if(t0(sel.t).rows[r])t0(sel.t).rows[r].insertBefore(mkTd(sel.t),ref)}}
 function t0(t){return t}
-function tbOp(op){var q=rect();if(!q){toast('Clique d’abord dans une cellule du tableau.');return}if(op=='d'){nMode='fill';nOpen();return}var t=sel.t;
+function tbOp(op){var q=rect();if(!q){toast('Clique d’abord dans une cellule du tableau.');return}if(op=='x'){rangeMode=true;toast('Touche maintenant la cellule de fin.');return}if(op=='d'){nMode='fill';nOpen();return}var t=sel.t;
  if(op=='ar')addRow(t,q.g,q.r2+1);
  else if(op=='ac')addCol(t,q.g,q.c2+1);
  else if(op=='dr'){for(var r=q.r2;r>=q.r1;r--)delRow(t,grid(t),r)}
@@ -29,7 +29,7 @@ function tbOp(op){var q=rect();if(!q){toast('Clique d’abord dans une cellule d
 /* ---- mise en forme du texte ---- */
 function cellOf(n){n=n&&(n.nodeType==1?n:n.parentNode);return n&&n.closest?n.closest('td,th'):null}
 document.addEventListener('selectionchange',function(){var s=getSelection();if(!s.rangeCount)return;var r=s.getRangeAt(0),n=r.commonAncestorContainer;n=n.nodeType==1?n:n.parentNode;if(!n.closest||!n.closest('#page'))return;sr=r.cloneRange();
- var a=cellOf(s.anchorNode),b=cellOf(s.focusNode);if(a&&b&&a.closest('table')===b.closest('table'))sel={t:a.closest('table'),a:a,b:b};else sel=a?{t:a.closest('table'),a:a,b:a}:null;marks()});
+ var a=cellOf(s.anchorNode),b=cellOf(s.focusNode);if(rangeMode&&a&&sel&&a.closest('table')===sel.t&&a!==sel.a){sel={t:sel.t,a:sel.a,b:a};rangeMode=false;marks();return}if(a&&b&&a.closest('table')===b.closest('table'))sel={t:a.closest('table'),a:a,b:b};else sel=a?{t:a.closest('table'),a:a,b:a}:null;marks()});
 document.addEventListener('mousedown',function(e){var f=e.target.closest&&e.target.closest('#fb');if(f&&!/SELECT|INPUT|LABEL/.test(e.target.tagName))e.preventDefault()});
 function rest(){if(!sr)return false;var n=sr.commonAncestorContainer;n=n.nodeType==1?n:n.parentNode;var ed=n.closest&&n.closest('[contenteditable]');if(!ed)return false;ed.focus({preventScroll:true});var s=getSelection();s.removeAllRanges();s.addRange(sr);return true}
 var PROP={b:'fontWeight',i:'fontStyle',u:'textDecoration',col:'color',fam:'fontFamily',sz:'fontSize',h:'background'};
@@ -46,7 +46,7 @@ function fmtT(k,v){
  else if(rest()){var X=function(c,a){document.execCommand(c,false,a)};
   if(k=='b')X('bold');else if(k=='i')X('italic');else if(k=='u')X('underline');
   else if(k=='col'){X('styleWithCSS',true);X('foreColor',v)}
-  else if(k=='h'){X('styleWithCSS',true);X('hiliteColor',v)}
+  else if(k=='h'){X('styleWithCSS',true);X('hiliteColor',v||'transparent')}
   else if(k=='fam'){X('styleWithCSS',true);X('fontName',v)}
   else if(k=='sz'){X('styleWithCSS',false);X('fontSize','7');[].forEach.call(document.querySelectorAll('#page font[size="7"]'),function(f){var sp=document.createElement('span');sp.style.fontSize=v+'px';while(f.firstChild)sp.appendChild(f.firstChild);f.replaceWith(sp)})}
   else X({l:'justifyLeft',c:'justifyCenter',r:'justifyRight'}[k])}

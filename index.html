@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mon carnet</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src data: blob:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src data: blob:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'; frame-src about:">
 <style>
 :root{--bg:#fff;--side:#e8eef2;--text:#1f2328;--muted:#6b7580;--line:#c9d1d8;--head:#f1f1f1;--gray:#808080;--accent:#7719aa;--sel:#e6e6e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1f23;--side:#262b31;--text:#e6e8ea;--muted:#9aa4ae;--line:#434b54;--head:#2b3036;--gray:#555b62;--accent:#c58af0;--sel:#3a4047;color-scheme:dark}}
@@ -14,7 +14,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif;min-height:100vh}
 #app{display:flex;min-height:100vh}
 #secs{width:220px;background:var(--side);padding:12px 8px;flex:none}
-#pgs{width:210px;border-right:1px solid var(--line);padding:12px 8px;flex:none}
+#pgs{width:250px;border-right:1px solid var(--line);padding:12px 8px;flex:none}
 main{flex:1;min-width:0;padding:20px 24px}
 #nsel{width:100%;padding:7px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-weight:600}
 .sec{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:6px;cursor:pointer}
@@ -66,6 +66,18 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--bg);colo
 #q{width:100%;max-width:520px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
 #res{position:absolute;left:10px;top:100%;width:min(560px,calc(100vw - 20px));max-height:60vh;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:none}
 .rs{padding:8px 10px;cursor:pointer;border-bottom:1px solid var(--line)}.rs:hover{background:var(--sel)}.rs span{color:var(--muted);font-size:12px;margin-left:6px}.rs div{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fb{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:flex-end;padding:6px 0}
+.fg{display:flex;flex-direction:column;gap:2px;padding-right:12px;border-right:1px solid var(--line)}
+.fg:last-child{border-right:0;padding-right:0}
+.fl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.fr{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+#fb .btn,#fb select,#fb label{height:28px;padding:0 8px;font-size:12px;display:inline-flex;align-items:center;gap:4px}
+#fb select{max-width:110px}
+.sw{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);cursor:pointer;padding:0}
+.cb{cursor:pointer;user-select:none}.cdone{text-decoration:line-through;opacity:.6}
+.dot{cursor:pointer;font-style:normal;padding:0 3px;color:var(--muted)}.dot.s1{color:#e8922a}.dot.s2{color:#2ba84a}
+.box:focus{outline:none}
+body.focus #secs,body.focus #pgs{display:none}
 .gp{cursor:grab;touch-action:none;color:var(--muted);padding:0 4px;font-style:normal;user-select:none}
 .pg.dt,.sec.dt{box-shadow:inset 0 2px 0 var(--accent)}.pg.db,.sec.db{box-shadow:inset 0 -2px 0 var(--accent)}.sec.dm{outline:2px solid var(--accent)}
 @page{margin:12mm}
@@ -89,12 +101,41 @@ dialog label{display:block;margin:8px 0 2px;color:var(--muted)}
 dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font:inherit}
 .row{display:flex;gap:8px;flex-wrap:wrap}.row>div{flex:1;min-width:90px}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);padding:8px 14px;border-radius:8px;display:none;z-index:50}
-@media(max-width:760px){#app{flex-direction:column}#secs,#pgs{width:100%;border:0}main{padding:14px}}
+#bMenu,#bTools,#bd{display:none}
+#side{display:flex;flex:none}
+#sbar{display:flex;gap:6px;align-items:center}
+#q{flex:1;min-width:0}
+@media(max-width:760px){
+ body{font-size:15px}
+ #bMenu,#bTools{display:inline-flex;align-items:center;height:36px;padding:0 10px;flex:none}
+ #q{height:36px;font-size:16px}
+ #app{display:block}
+ #side{position:fixed;top:0;bottom:0;left:0;width:min(88vw,340px);z-index:70;flex-direction:column;overflow-y:auto;background:var(--side);transform:translateX(-105%);transition:transform .2s;padding-top:env(safe-area-inset-top,0px);box-shadow:0 0 24px rgba(0,0,0,.4)}
+ body.nav #side{transform:none}
+ body.nav #bd{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:65}
+ #secs,#pgs{width:100%;border:0;flex:none}
+ #pgs{background:var(--bg)}
+ .sec,.pg{padding:11px 10px}.x{font-size:17px;padding:6px}
+ #stt{position:static;flex-wrap:wrap;border:0;border-top:1px solid var(--line);border-radius:0;margin-top:auto;padding:10px;background:var(--side)}
+ #stt button{height:34px}
+ main{padding:10px}
+ #title{font-size:20px}
+ #fb{display:none;flex-wrap:nowrap;overflow-x:auto;gap:8px;top:calc(env(safe-area-inset-top,0px) + 48px)}
+ body.tools #fb{display:flex}
+ .fg{flex:none}.fr{flex-wrap:nowrap}
+ #fb select,input,textarea{font-size:16px}
+ #page{overflow-x:auto;overflow-y:hidden;touch-action:manipulation}
+ .br{width:26px;height:26px}.bh{height:26px}
+ table.w{min-width:760px}
+ table.w th:first-child,table.w td:first-child{position:sticky;left:0;z-index:1;width:110px}
+ dialog{max-height:90vh;overflow:auto}
+}
 </style>
 </head>
 <body>
-<div id="sbar"><input id="q" type="search" placeholder="🔍 Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><div id="res"></div></div>
-<div id="app"><nav id="secs"></nav><nav id="pgs"></nav><main id="main"></main></div>
+<div id="sbar"><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><div id="res"></div></div>
+<div id="app"><div id="side"><nav id="secs"></nav><nav id="pgs"></nav><div id="stt"><span id="sts"></span><button class="btn sm" id="bT" title="Basculer clair / sombre">🌙</button><button class="btn sm" id="bX">💾 Exporter</button><button class="btn sm" id="bI">📥 Importer</button><button class="btn sm" id="bL" style="display:none">🔒 Verrouiller</button><button class="btn sm" id="bK" style="display:none" title="Changer le jeton GitHub">🔑 Jeton</button></div></div><main id="main"></main></div>
+<div id="bd"></div>
 <input type="file" id="fImg" accept="image/*" multiple hidden><input type="file" id="fXls" accept=".xlsx,.xls,.csv" hidden>
 <div id="lock"><div class="lk"><h2>📓 Mon carnet</h2><p id="lkMsg" style="margin:0;color:var(--muted)"></p>
 <label>E-mail</label><input id="lkE" type="email" autocomplete="username">
@@ -103,7 +144,7 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <label>Jeton GitHub (accès à ce dépôt uniquement)</label><input id="lkT" type="password" autocomplete="off"></div>
 <button class="btn" id="lkGo" style="margin-top:14px;border-color:var(--accent)">Se connecter</button><div><button class="link" id="lkCh" style="display:none">🔑 Changer le jeton / le dépôt</button></div><div id="lkErr"></div></div></div>
 <div id="toast"></div>
-<div id="stt"><span id="sts"></span><button class="btn sm" id="bT" title="Basculer clair / sombre">🌙</button><button class="btn sm" id="bX">💾 Exporter</button><button class="btn sm" id="bI">📥 Importer</button><button class="btn sm" id="bL" style="display:none">🔒 Verrouiller</button><button class="btn sm" id="bK" style="display:none" title="Changer le jeton GitHub">🔑 Jeton</button></div>
+
 <dialog id="dx"><h3 id="dxT" style="margin:0 0 6px"></h3><p id="dxP" style="margin:0 0 6px;color:var(--muted)"></p><textarea id="dxA" rows="8"></textarea><input type="file" id="dxF" accept=".json,.txt" style="margin-top:6px"><div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn" id="dxC">Copier</button><button class="btn" id="dxD">Télécharger</button><button class="btn" id="dxOk" style="border-color:var(--accent)">Importer</button><button class="btn" id="dxNo">Fermer</button></div></dialog>
 <dialog id="dq"><p id="ql" style="margin:0 0 8px"></p><input id="qi"><div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn" id="qno">Annuler</button><button class="btn" id="qok" style="border-color:var(--accent)">OK</button></div></dialog>
 <dialog id="dlg">
@@ -131,6 +172,9 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <script src="js/tableaux.js"></script>
 <script src="js/excel.js"></script>
 <script src="js/outils.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/confort.js"></script>
+<script src="js/mobile.js"></script>
 <script src="js/synchro.js"></script>
 
 </body>

@@ -53,7 +53,7 @@ function render(){
  h+='<button class="link" data-a="snew">+ Nouvelle section</button>'+(bulk&&bulk.k=='s'?bbar():'<button class="link" data-a="bulks">☑ Sélectionner des sections</button>');
  $('secs').innerHTML=h;
  var s=sec(),g='<div class="top"><button class="btn" data-a="pnew">＋ Ajouter une page</button><button class="btn" data-a="gen">Pré-créer des semaines</button></div>'+(bulk&&bulk.k=='p'?bbar():'<div class="top"><button class="btn sm" data-a="bulkp">☑ Sélectionner des pages</button></div>');
- if(s)s.pages.forEach(function(p,i){g+='<div class="pg'+(i==D.cur.p?' on':'')+'" data-p="'+i+'">'+ck('p',i)+gp('p',i)+'<span>'+esc(p.title)+'</span><button class="x" data-rp="'+i+'" title="Renommer">✎</button><button class="x" data-dp="'+i+'" title="Supprimer">🗑</button></div>'});
+ if(s)s.pages.forEach(function(p,i){g+='<div class="pg'+(i==D.cur.p?' on':'')+'" data-p="'+i+'">'+ck('p',i)+gp('p',i)+dot(p.st,i)+'<span>'+esc(p.title)+'</span><button class="x" data-rp="'+i+'" title="Renommer">✎</button><button class="x" data-dup="'+i+'" title="Dupliquer la page">⧉</button><button class="x" data-dp="'+i+'" title="Supprimer">🗑</button></div>'});
  $('pgs').innerHTML=g;if(bulk)bsync();
  var p=pg(),m=$('main');
  if(!p){m.innerHTML='<p style="color:var(--muted)">Aucune page ici. Utilise « Ajouter une page ».</p>';return}
@@ -65,14 +65,14 @@ function render(){
  p.boxes.forEach(function(b){pe.appendChild(mkBox(b))});fit();ser(1);hydrate();
 }
 function mkBox(b){
- var e=document.createElement('div');e.className='box';e.dataset.id=b.id;e.dataset.k=b.k;e.dataset.ar=b.ar||'';
+ var e=document.createElement('div');e.className='box';e.tabIndex=-1;e.dataset.id=b.id;e.dataset.k=b.k;e.dataset.ar=b.ar||'';
  e.style.left=b.x+'px';e.style.top=b.y+'px';e.style.width=b.w+'px';
  e.innerHTML='<div class="bh"><span>✥ déplacer</span><button class="bx" title="Supprimer">✕</button></div>'+(b.k=='i'?'<img draggable="false" '+(+b.ar?'style="aspect-ratio:'+(+b.ar)+'" ':'')+(/^idb:/.test(b.c)?'data-ref="'+qa(b.c)+'">':'src="'+qa(b.c)+'">'):'<div class="bc" contenteditable data-ph="Écrire ici…">'+san(b.c)+'</div>')+'<span class="br"></span>';
  return e
 }
 function fit(){var pe=$('page');if(!pe)return;var m=500;[].forEach.call(pe.querySelectorAll('.box'),function(b){m=Math.max(m,b.offsetTop+b.offsetHeight+120)});pe.style.minHeight=m+'px'}
 function nextY(){var pe=$('page'),w=pe.querySelector('.wrap'),y=w?w.offsetTop+w.offsetHeight+20:150;[].forEach.call(pe.querySelectorAll('.box'),function(b){y=Math.max(y,b.offsetTop+b.offsetHeight+12)});return y}
-function addBox(k,x,y,w,c,ar){var e=mkBox({id:uid(),k:k,x:x,y:y,w:w,c:c,ar:ar});$('page').appendChild(e);fit();ser();return e}
+function addBox(k,x,y,w,c,ar){w=Math.min(w,Math.max(140,$('page').clientWidth-x-10));var e=mkBox({id:uid(),k:k,x:x,y:y,w:w,c:c,ar:ar});$('page').appendChild(e);fit();ser();return e}
 function newText(x,y){var e=addBox('t',Math.max(0,x),Math.max(0,y),280,'');e.querySelector('.bc').focus()}
 function ser(q){
  var p=pg(),pe=$('page');if(!p||!pe)return;
@@ -101,9 +101,13 @@ document.addEventListener('pointerdown',function(e){
 $('secs').addEventListener('change',function(e){if(e.target.id=='nsel'){ser();D.cur={n:+e.target.value,s:0,p:0};save();render()}});
 document.addEventListener('click',function(e){
  var t=e.target,d=t.dataset||{},n=nb();
- var bt=t.closest&&t.closest('[data-f],[data-t]');if(bt){var df=bt.dataset.f;if(df=='undo')undo(-1);else if(df=='redo')undo(1);else if(df)fmtT(df);else tbOp(bt.dataset.t);return}
+ var bq=t.closest&&t.closest('[data-q]');if(bq){quick(bq.dataset.q);return}
+ var bt=t.closest&&t.closest('[data-f],[data-t]');if(bt){var df=bt.dataset.f;if(df=='undo')undo(-1);else if(df=='redo')undo(1);else if(df=='cb')insCb();else if(df)fmtT(df);else tbOp(bt.dataset.t);return}
  if(t.classList.contains('ck')){bpick(t.dataset.k,+t.dataset.i,e.shiftKey);return}
  if(DG||t.classList.contains('gp'))return;
+ if(t.classList.contains('cb')){toggleCb(t);return}
+ if(t.dataset&&t.dataset.st!==undefined){cycSt(+t.dataset.st);return}
+ if(d.dup!==undefined){dupPage(+d.dup);return}
  if(t.classList.contains('bx')){t.closest('.box').remove();fit();ser();return}
  if(d.rs!==undefined){ser();var s=n.sections[+d.rs];ask('Nouveau nom de la section',s.name,function(v){if(v.trim()){s.name=v.trim();save();render()}});return}
  if(d.ds!==undefined){ser();var i=+d.ds;conf('Supprimer la section « '+n.sections[i].name+' » et toutes ses pages ?',function(){n.sections.splice(i,1);D.cur.s=0;D.cur.p=0;save();render()});return}
@@ -126,7 +130,8 @@ document.addEventListener('click',function(e){
   conf('Supprimer '+ids.length+(kk=='p'?' page(s) ?':' section(s) et toutes leurs pages ?'),function(){if(kk=='p'){var ss=sec();ss.pages=ss.pages.filter(function(_,i){return ids.indexOf(i)<0});D.cur.p=0}else{n.sections=n.sections.filter(function(_,i){return ids.indexOf(i)<0});D.cur.s=0;D.cur.p=0}bulk=null;save();render()});return}
  if(ac=='img'){$('fImg').click();return}
  if(ac=='xls'){$('fXls').click();return}
- if(ac=='print'){ser();window.print();return}
+ if(ac=='pdf'){makePdf();return}
+ if(ac=='focus'){document.body.classList.toggle('focus');return}
  if(ac=='tb'){newText(30,nextY());return}
  var p2=pg();if(!p2)return;ser();
  if(ac=='mk'){var c0=['Matières'].concat(DAYS,['PROCHAINE ALTERNANCE']);p2.tab=tabHtml(c0,SUBJ.map(function(x){var r=[{t:x,g:0}];for(var i=0;i<6;i++)r.push({t:'',g:0});return r}))}
@@ -142,12 +147,36 @@ $('dOk').onclick=function(){
  var w=a,c=0;while((y*100+w)<=(y2*100+b)&&c++<150){var np=weekPage(pre,y,w,subj,$('dDt').checked);if(ex.indexOf(np.title+'|'+y)<0)s.pages.push(tabify(np));w+=st;while(w>wiy(y)){w-=wiy(y);y++}}
  save();$('dlg').close();render()
 };
-var TH=[],sel=null,sr=null;
-var FB='<div id="fb"><button class="btn sm" data-f="undo" title="Annuler (Ctrl+Z)">↶</button><button class="btn sm" data-f="redo" title="Rétablir (Ctrl+Y)">↷</button><button class="btn sm" data-a="tb">T Zone de texte</button><button class="btn sm" data-a="img">🖼 Image</button><button class="btn sm" data-a="xls">📊 Excel / CSV</button><button class="btn sm" data-a="ntab">▦ Tableau</button>%T%<button class="btn sm" data-a="print" title="Imprimer / exporter en PDF">🖨 PDF</button><span style="width:10px"></span><select id="fF"><option value="">Police</option>'+['Calibri','Arial','Verdana','Georgia','Times New Roman','Courier New','Comic Sans MS','Gabriola','Impact'].map(function(f){return '<option>'+f+'</option>'}).join('')+'</select><select id="fS"><option value="">Taille</option>'+[8,9,10,11,12,14,16,18,20,24,28,32,40,48].map(function(n){return '<option>'+n+'</option>'}).join('')+'</select>'
-+'<button class="btn sm" data-f="b"><b>G</b></button><button class="btn sm" data-f="i"><i>I</i></button><button class="btn sm" data-f="u"><u>S</u></button>'
-+'<label title="Couleur du texte">A <input type="color" id="cT" value="#000000"></label><label title="Surlignage du texte">🖍 <input type="color" id="cH" value="#ffff00"></label><label title="Fond de cellule">▨ <input type="color" id="cB" value="#ffffff"></label>'
-+'<button class="btn sm" data-f="l" title="Aligner à gauche">⇤</button><button class="btn sm" data-f="c" title="Centrer">↔</button><button class="btn sm" data-f="r" title="Aligner à droite">⇥</button><span style="width:10px"></span>'
-+'<button class="btn sm" data-t="ar">+ Ligne</button><button class="btn sm" data-t="ac">+ Colonne</button><button class="btn sm" data-t="dr">– Ligne</button><button class="btn sm" data-t="dc">– Colonne</button><button class="btn sm" data-t="m">Fusionner</button><button class="btn sm" data-t="s">Scinder</button><button class="btn sm" data-t="g">Griser</button><button class="btn sm" data-t="d" title="Remplir les cellules sélectionnées avec des dates">📅 Dates auto</button></div>';
+var TH=[],sel=null,sr=null,rangeMode=false;
+var FONTS=['Calibri','Arial','Verdana','Georgia','Times New Roman','Courier New','Comic Sans MS','Gabriola','Impact'],
+    SIZES=[8,9,10,11,12,14,16,18,20,24,28,32,40,48],
+    SWATCH=['#fff2a8','#b7e4a7','#f5b5b5','#b5d4f5'];
+function fbtn(attr,txt,title){return '<button class="btn sm" '+attr+(title?' title="'+title+'"':'')+'>'+txt+'</button>'}
+function fgrp(label,html){return '<div class="fg"><span class="fl">'+label+'</span><div class="fr">'+html+'</div></div>'}
+var FB='<div id="fb">'+[
+  fgrp('Historique',
+    fbtn('data-f="undo"','↶','Annuler (Ctrl+Z)')+fbtn('data-f="redo"','↷','Rétablir (Ctrl+Y)')),
+  fgrp('Insérer',
+    fbtn('data-a="tb"','T Texte','Zone de texte (ou double-clic sur la page)')+fbtn('data-a="img"','🖼 Image')+
+    fbtn('data-a="xls"','📊 Excel / CSV')+fbtn('data-a="ntab"','▦ Tableau')+'%T%'+fbtn('data-f="cb"','☑ Case','Case à cocher')),
+  fgrp('Texte',
+    '<select id="fF"><option value="">Police</option>'+FONTS.map(function(f){return '<option>'+f+'</option>'}).join('')+'</select>'+
+    '<select id="fS"><option value="">Taille</option>'+SIZES.map(function(n){return '<option>'+n+'</option>'}).join('')+'</select>'+
+    fbtn('data-f="b"','<b>G</b>','Gras (Ctrl+B)')+fbtn('data-f="i"','<i>I</i>','Italique (Ctrl+I)')+fbtn('data-f="u"','<u>S</u>','Souligné (Ctrl+U)')+
+    fbtn('data-f="l"','⇤','Aligner à gauche')+fbtn('data-f="c"','↔','Centrer')+fbtn('data-f="r"','⇥','Aligner à droite')),
+  fgrp('Couleurs',
+    '<label title="Couleur du texte">A <input type="color" id="cT" value="#000000"></label>'+
+    '<label title="Surlignage du texte">🖍 <input type="color" id="cH" value="#ffff00"></label>'+
+    '<label title="Fond de cellule">▨ <input type="color" id="cB" value="#ffffff"></label>'+
+    SWATCH.map(function(c){return '<button class="sw" data-q="'+c+'" style="background:'+c+'" title="Couleur rapide"></button>'}).join('')+
+    fbtn('data-q=""','✕','Retirer la couleur')),
+  fgrp('Tableau',
+    fbtn('data-t="ar"','+ Ligne')+fbtn('data-t="ac"','+ Colonne')+fbtn('data-t="dr"','– Ligne')+fbtn('data-t="dc"','– Colonne')+
+    fbtn('data-t="m"','Fusionner')+fbtn('data-t="s"','Scinder')+fbtn('data-t="x"','⬚ Plage','Étendre la sélection : touche ensuite la cellule de fin')+fbtn('data-t="g"','Griser')+
+    fbtn('data-t="d"','📅 Dates auto','Remplir les cellules sélectionnées avec des dates')),
+  fgrp('Page',
+    fbtn('data-a="focus"','⤢ Focus','Masquer / afficher les colonnes de gauche')+fbtn('data-a="pdf"','⬇ PDF','Télécharger la page en PDF'))
+].join('')+'</div>';
 function clean(h){return h.replace(/class="([^"]*)"/g,function(m,v){v=v.split(/\s+/).filter(function(x){return x&&x!='ms'}).join(' ');return v?'class="'+v+'"':''})}
 function tabHtml(cols,rows){return '<table class="w"><thead><tr>'+cols.map(function(c){return '<th contenteditable>'+c+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td contenteditable'+(c.g?' class="g"':'')+'>'+c.t+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'}
 function tabify(p){if(p.cols){p.tab=tabHtml(p.cols,p.rows);delete p.cols;delete p.rows}return p}
