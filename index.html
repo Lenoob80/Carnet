@@ -66,7 +66,7 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--bg);colo
 #q{width:100%;max-width:520px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
 #res{position:absolute;left:10px;top:100%;width:min(560px,calc(100vw - 20px));max-height:60vh;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:none}
 .rs{padding:8px 10px;cursor:pointer;border-bottom:1px solid var(--line)}.rs:hover{background:var(--sel)}.rs span{color:var(--muted);font-size:12px;margin-left:6px}.rs div{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#fb{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:flex-end;padding:6px 0}
+#fb{display:block;padding:0}
 .fg{display:flex;flex-direction:column;gap:2px;padding-right:12px;border-right:1px solid var(--line)}
 .fg:last-child{border-right:0;padding-right:0}
 .fl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
@@ -77,6 +77,29 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--bg);colo
 .cb{cursor:pointer;user-select:none}.cdone{text-decoration:line-through;opacity:.6}
 .dot{cursor:pointer;font-style:normal;padding:0 3px;color:var(--muted)}.dot.s1{color:#e8922a}.dot.s2{color:#2ba84a}
 .box:focus{outline:none}
+body{--c-text:#e53935;--c-hl:#fff176;--c-fill:#fff176}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 2px}
+.tab{padding:7px 14px;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font:inherit;font-size:13px;white-space:nowrap}
+body[data-tab="home"] .tab[data-tab="home"],body[data-tab="insert"] .tab[data-tab="insert"],body[data-tab="table"] .tab[data-tab="table"],body[data-tab="page"] .tab[data-tab="page"]{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+.tp{display:none;flex-wrap:wrap;gap:6px 12px;align-items:flex-end;padding:6px 4px}
+body[data-tab="home"] .tp[data-tp="home"],body[data-tab="insert"] .tp[data-tp="insert"],body[data-tab="table"] .tp[data-tp="table"],body[data-tab="page"] .tp[data-tp="page"]{display:flex}
+.split{display:inline-flex}
+.split .btn:first-child{flex-direction:column;justify-content:center;gap:1px;border-radius:6px 0 0 6px}
+.split .btn:last-child{border-radius:0 6px 6px 0;border-left:0;padding:0 5px}
+.gl{line-height:1;font-weight:700}
+.bar{display:block;width:16px;height:4px;border-radius:2px}
+#pop{position:fixed;z-index:80;display:none;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.35);padding:10px;width:262px;max-height:80vh;overflow:auto}
+#pop .phd{font-weight:600;margin-bottom:6px}
+#pop .pnone{display:block;width:100%;text-align:left;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);cursor:pointer;font:inherit;margin-bottom:8px}
+#pop .pnone:hover{border-color:var(--accent)}
+.pal{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.psw{aspect-ratio:1;border:1px solid rgba(128,128,128,.4);border-radius:4px;cursor:pointer;padding:0}
+.psw:hover{outline:2px solid var(--accent)}
+#pop .pl{font-size:11px;color:var(--muted);margin:8px 0 4px}
+#pop label.pcu{display:flex;align-items:center;justify-content:space-between;margin-top:8px;color:var(--muted);font-size:13px}
+#pop .ci{display:block;width:100%;text-align:left;padding:7px 8px;border:0;background:none;color:var(--text);cursor:pointer;font:inherit;border-radius:6px}
+#pop .ci:hover{background:var(--sel)}
+@media(max-width:760px){#pop{left:0!important;right:0;bottom:0;top:auto!important;width:auto;border-radius:14px 14px 0 0;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}}
 .pg span{white-space:normal;overflow-wrap:anywhere}
 body.focus #secs,body.focus #pgs{display:none}
 .gp{cursor:grab;touch-action:none;color:var(--muted);padding:0 4px;font-style:normal;user-select:none}
@@ -121,8 +144,9 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
  #stt button{height:34px}
  main{padding:10px}
  #title{font-size:20px}
- #fb{display:none;flex-wrap:nowrap;overflow-x:auto;gap:8px;top:calc(env(safe-area-inset-top,0px) + 48px)}
- body.tools #fb{display:flex}
+ #fb{display:none;top:calc(env(safe-area-inset-top,0px) + 48px)}
+ body.tools #fb{display:block}
+ .tp,.tabs{overflow-x:auto;flex-wrap:nowrap}
  .fg{flex:none}.fr{flex-wrap:nowrap}
  #fb select,input,textarea{font-size:16px}
  #page{overflow-x:auto;overflow-y:hidden;touch-action:manipulation}
@@ -178,6 +202,8 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <script src="js/outils.js"></script>
 <script src="js/pdf.js"></script>
 <script src="js/confort.js"></script>
+<script src="js/menus.js"></script>
+<script src="js/couleurs.js"></script>
 <script src="js/mobile.js"></script>
 <script src="js/synchro.js"></script>
 
