@@ -15,6 +15,7 @@ document.addEventListener('drop',function(e){
   if(!hasFiles(e))return;
   e.preventDefault();
   var pe=$('page');if(pe)pe.classList.remove('dropping');
+  if(RO()){toast('Lecture seule : repasse en édition pour déposer des fichiers.');return}
   if(!pe||!inPage(e)){toast('Dépose les fichiers sur la page.');return}
   var r=pe.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,off=0;
   [].slice.call(e.dataTransfer.files).forEach(function(f){

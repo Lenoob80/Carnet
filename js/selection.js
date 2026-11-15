@@ -119,7 +119,7 @@ function startBand(e,mod){
 
 document.addEventListener('pointerdown',function(e){
   var t=e.target;
-  if(!t.closest||t.closest('.bx')||DR.on)return;
+  if(!t.closest||t.closest('.bx')||DR.on||RO())return;
   var b=t.closest('.box'),mod=e.ctrlKey||e.metaKey||e.shiftKey,touch=e.pointerType=='touch';
   if(!b){if(t.id=='page'&&!touch)startBand(e,mod);return}
   if(t.closest('.br')){startResize(e,b);return}
@@ -135,7 +135,7 @@ document.addEventListener('keydown',function(e){
   var a=document.activeElement,k=e.key.toLowerCase(),ctrl=e.ctrlKey||e.metaKey;
   if(a&&a.closest&&a.closest('input,textarea,select,dialog,#sbar'))return;
   var typing=a&&a.closest&&a.closest('[contenteditable]:not([contenteditable="false"])');
-  if(!$('page')||DR.on)return;
+  if(!$('page')||DR.on||RO())return;
   if(ctrl&&k=='a'){
     if(typing){                                         // 1er Ctrl+A : tout le texte de la zone ; 2e : tous les objets
       var s=getSelection().toString().trim(),full=(typing.textContent||'').trim();

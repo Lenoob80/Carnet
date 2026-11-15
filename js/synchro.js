@@ -34,12 +34,12 @@ async function pull(){
  if(r.status==404){SHA=null;return 'none'}
  if(r.status==401)throw new Error('Jeton refusé (401)');
  if(!r.ok)throw new Error('GitHub '+r.status);
- ETAG=r.headers.get('ETag');var j=await r.json();SHA=j.sha;var c=j.content;
+ ETAG=r.headers.get('ETag');try{noteExp(r.headers.get('github-authentication-token-expiration'))}catch(e){}var j=await r.json();SHA=j.sha;var c=j.content;
  if(!c){var b=await gh('/git/blobs/'+j.sha);c=(await b.json()).content}
  try{return await unseal(TD.decode(ub(c)))}catch(e){throw new Error('Données illisibles : e-mail ou mot de passe différents de ceux utilisés à la création.')}
 }
-async function push(doc){
- var body={message:'sync',content:b64(TE.encode(await seal(doc)))};if(SHA)body.sha=SHA;
+async function push(doc,msg){
+ var body={message:msg||'sync',content:b64(TE.encode(await seal(doc)))};if(SHA)body.sha=SHA;
  var r=await gh('/contents/'+CFG.p,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
  if(r.status==409||r.status==422)return 'conflict';
  if(r.status==401)throw new Error('Jeton refusé (401)');
@@ -106,7 +106,7 @@ async function boot(){
  D.nbs=fix({nbs:D.nbs}).nbs;purgeTrash();LH=BASE?H(BASE):0;
  if(await migImgs())dirty=true;
  render();await cache();if(legacy)localStorage.removeItem('carnet-data');
- $('bL').style.display='';$('bK').style.display='';bump();
+ $('bL').style.display='';$('bK').style.display='';bump();checkExp();
  setInterval(function(){if(!document.hidden)syncNow()},10000);syncNow()
 }
 /* ---- écran de connexion ---- */
@@ -122,7 +122,7 @@ $('lkGo').onclick=async function(){
   if(raw){try{CFG=await unseal(raw)}catch(x){K=null;return lerr('E-mail ou mot de passe incorrect.')}}
   if(!raw||chg){var rp=$('lkR').value.trim()||(CFG&&CFG.r)||'',tk=$('lkT').value.trim(),pa=(CFG&&CFG.p)||'carnet.enc';
    if(!/^[\w.-]+\/[\w.-]+$/.test(rp)||!tk){K=null;CFG=null;return lerr('Renseigne le jeton'+(raw?'.':' et le dépôt (pseudo/nom).'))}
-   CFG={r:rp,t:tk,p:pa};var rr=await gh('');
+   CFG={r:rp,t:tk,p:pa,exp:$('lkX').value||''};var rr=await gh('');
    if(rr.status==401){K=null;CFG=null;return lerr('Jeton refusé (401).')}
    if(!rr.ok){K=null;CFG=null;return lerr('Dépôt introuvable ou jeton sans accès ('+rr.status+').')}
    fresh=true}
@@ -155,7 +155,7 @@ function doSearch(){
  try{ser()}catch(e){}
  var W=nz(v).split(/\s+/),out=[];
  D.nbs.forEach(function(n,ni){n.sections.forEach(function(s,si){s.pages.forEach(function(p,pi){
-  var full=[p.title,p.sub,tx(p.tab)].concat((p.boxes||[]).filter(function(b){return b.k=='t'}).map(function(b){return tx(b.c)})).join(' • '),f=nz(full);
+  var full=[p.title,p.sub,(p.tags||[]).map(function(t){return '#'+t}).join(' '),tx(p.tab)].concat((p.boxes||[]).filter(function(b){return b.k=='t'}).map(function(b){return tx(b.c)})).join(' • '),f=nz(full);
   if(W.every(function(w){return f.indexOf(w)>=0})){var i=f.indexOf(W[0]);out.push({ni:ni,si:si,pi:pi,t:p.title,path:n.name+' › '+s.name,sn:full.slice(Math.max(0,i-30),i+80),inT:nz(p.title).indexOf(W[0])>=0?1:0})}})})});
  out.sort(function(a,b){return b.inT-a.inT});
  R.innerHTML=out.slice(0,30).map(function(x){return '<div class="rs" data-ni="'+x.ni+'" data-si="'+x.si+'" data-pi="'+x.pi+'"><b>'+esc(x.t)+'</b><span>'+esc(x.path)+'</span><div>'+esc(x.sn)+'</div></div>'}).join('')||'<div class="rs">Aucun résultat</div>';

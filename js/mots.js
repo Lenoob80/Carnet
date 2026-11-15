@@ -3,7 +3,7 @@
 function pageText(){
   var pe=$('page');if(!pe)return '';
   var c=pe.cloneNode(true);
-  [].forEach.call(c.querySelectorAll('.bh,.br,.rband,.guide,svg'),function(e){e.remove()});
+  [].forEach.call(c.querySelectorAll('.bh,.br,.rband,.guide,svg,#tg'),function(e){e.remove()});
   return c.textContent||'';
 }
 function countWords(t){

@@ -113,7 +113,40 @@ body[data-snap="1"] [data-o="snap"],body[data-grid="1"] [data-o="grid"]{border-c
 .mrow{display:flex;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line)}
 .mrow .mi{flex:1;min-width:0}.mrow small{display:block;color:var(--muted)}
 .mgrp{font-weight:600;margin:12px 0 4px}.mit{padding:6px 8px;cursor:pointer;border-radius:6px}.mit:hover{background:var(--sel)}
-.box.msel{outline:2px solid var(--accent);outline-offset:1px}.box.msel .bh{opacity:1}
+.box.msel{outline:2px solid var(--accent);outline-offset:1px}
+/* listes, titres, encadrés */
+.bc ul,.bc ol,td ul,td ol{margin:4px 0;padding-left:26px}
+ul.ls-disc,ul.ls-disc ul{list-style-type:disc}ul.ls-square,ul.ls-square ul{list-style-type:square}ul.ls-arrow,ul.ls-arrow ul{list-style-type:"➔  "}
+ol.ls-dec,ol.ls-dec ol{list-style-type:decimal}ol.ls-alpha,ol.ls-alpha ol{list-style-type:lower-alpha}ol.ls-roman,ol.ls-roman ol{list-style-type:lower-roman}
+ol.ml-num{list-style-type:decimal}ol.ml-num ol{list-style-type:lower-alpha}ol.ml-num ol ol{list-style-type:lower-roman}
+ul.ml-bul{list-style-type:disc}ul.ml-bul ul{list-style-type:circle}ul.ml-bul ul ul{list-style-type:square}
+.bc h1,.bc h2,.bc h3,td h1,td h2,td h3{margin:6px 0 4px;line-height:1.25}
+.bc h1,td h1{font-size:1.6em}.bc h2,td h2{font-size:1.35em}.bc h3,td h3{font-size:1.15em}
+.callout{border-left:4px solid;border-radius:6px;padding:8px 10px;margin:6px 0}
+.callout.tip{background:rgba(67,160,71,.16);border-color:#43a047}
+.callout.warn{background:rgba(251,140,0,.16);border-color:#fb8c00}
+.callout.note{background:rgba(30,136,229,.16);border-color:#1e88e5}
+.flash{animation:fl 1.3s}@keyframes fl{0%,60%{background:rgba(255,235,59,.6)}100%{background:none}}
+.symg{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.pch{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:4px 0;font-size:16px;cursor:pointer}
+.pch:hover{border-color:var(--accent)}
+/* poignée de redimensionnement des tableaux */
+#rzh{position:fixed;z-index:60;display:none;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;line-height:18px;text-align:center;cursor:nwse-resize;touch-action:none}
+/* barre flottante au-dessus du clavier */
+#ftb{position:fixed;left:0;right:0;z-index:60;display:none;gap:6px;justify-content:space-around;padding:6px 8px;background:var(--side);border-top:1px solid var(--line)}
+#ftb .btn{height:38px;min-width:44px;padding:0 10px;font-size:15px}
+/* lecture seule */
+body.ro #page [contenteditable]{-webkit-user-modify:read-only;pointer-events:none;caret-color:transparent}
+body.ro #page .plink,body.ro #page .cb,body.ro #page .anc,body.ro #page .chip{pointer-events:auto}
+body.ro .bh,body.ro .br{display:none}
+body.ro #bRO{border-color:var(--accent);background:var(--sel)}
+/* étiquettes, alerte jeton, minuteur */
+#tg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.chip{border:1px solid var(--accent);color:var(--accent);background:none;border-radius:12px;padding:2px 10px;cursor:pointer;font-family:inherit;font-size:12px}
+.chip b{margin-left:6px;cursor:pointer}.chip.add{border-style:dashed;color:var(--muted);border-color:var(--line)}.chip.on{background:var(--accent);color:var(--bg)}
+#expb{background:#fff3cd;color:#664d03;padding:6px 12px;font-size:13px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+#expb.bad{background:#f8d7da;color:#842029}
+#pm,#bRO{flex:none;height:36px;padding:0 10px}#pm.on{border-color:var(--accent);background:var(--sel)}.box.msel .bh{opacity:1}
 .rband{position:absolute;border:1px dashed var(--accent);background:rgba(119,25,170,.14);z-index:9999;pointer-events:none}
 @media print{.box.msel,.guide{outline:none!important}.guide,#dtool,#dsvg{display:none!important}#page.gridon{background:none!important}}
 body{--c-text:#e53935;--c-hl:#fff176;--c-fill:#fff176}
@@ -171,6 +204,7 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 @media(max-width:760px){
  body{font-size:15px}
  #wc{display:none}
+ #pm,#bRO{display:inline-flex;align-items:center;padding:0 8px}
  #bMenu,#bTools{display:inline-flex;align-items:center;height:36px;padding:0 10px;flex:none}
  #q{height:36px;font-size:16px}
  #app{display:block}
@@ -199,7 +233,7 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 </head>
 <body>
 <div id="sa"></div>
-<div id="sbar"><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><span id="wc" title="Nombre de mots de la page"></span><div id="res"></div></div>
+<div id="sbar"><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><span id="wc" title="Nombre de mots de la page"></span><button class="btn" id="pm" title="Minuteur Pomodoro">🍅</button><button class="btn" id="bRO" title="Édition">✏️</button><div id="res"></div></div>
 <div id="app"><div id="side"><nav id="secs"></nav><nav id="pgs"></nav><div id="stt"><span id="sts"></span><button class="btn sm" id="bT" title="Basculer clair / sombre">🌙</button><button class="btn sm" id="bX">💾 Exporter</button><button class="btn sm" id="bI">📥 Importer</button><button class="btn sm" id="bL" style="display:none">🔒 Verrouiller</button><button class="btn sm" data-a="install" title="Installer sur l’écran d’accueil">📲 Installer</button><button class="btn sm" id="bK" style="display:none" title="Changer le jeton GitHub">🔑 Jeton</button></div></div><main id="main"></main></div>
 <div id="bd"></div>
 <input type="file" id="fImg" accept="image/*" multiple hidden><input type="file" id="fXls" accept=".xlsx,.xls,.csv" hidden>
@@ -207,7 +241,8 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <label>E-mail</label><input id="lkE" type="email" autocomplete="username">
 <label>Mot de passe</label><input id="lkP" type="password" autocomplete="current-password">
 <div id="lkSet" style="display:none"><label>Dépôt privé de données (pseudo/nom)</label><input id="lkR" autocomplete="off">
-<label>Jeton GitHub (accès à ce dépôt uniquement)</label><input id="lkT" type="password" autocomplete="off"></div>
+<label>Jeton GitHub (accès à ce dépôt uniquement)</label><input id="lkT" type="password" autocomplete="off">
+<label>Date d’expiration du jeton (facultatif)</label><input id="lkX" type="date"></div>
 <button class="btn" id="lkGo" style="margin-top:14px;border-color:var(--accent)">Se connecter</button><div><button class="link" id="lkCh" style="display:none">🔑 Changer le jeton / le dépôt</button></div><div id="lkErr"></div></div></div>
 <div id="toast"></div>
 
@@ -253,6 +288,16 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <script src="js/modeles.js"></script>
 <script src="js/liens.js"></script>
 <script src="js/mots.js"></script>
+<script src="js/tableaux2.js"></script>
+<script src="js/listes.js"></script>
+<script src="js/mobile2.js"></script>
+<script src="js/export.js"></script>
+<script src="js/etiquettes.js"></script>
+<script src="js/pomodoro.js"></script>
+<script src="js/rogner.js"></script>
+<script src="js/versions.js"></script>
+<script src="js/jeton.js"></script>
+<script src="js/raccourcis.js"></script>
 <script src="js/menus.js"></script>
 <script src="js/couleurs.js"></script>
 <script src="js/mobile.js"></script>

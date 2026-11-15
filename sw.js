@@ -2,7 +2,7 @@
    - fichiers du site : réseau d'abord (toujours à jour), copie locale si pas de réseau
    - bibliothèques cdnjs : copie locale d'abord (versions fixes)
    - api.github.com et tout le reste : jamais intercepté, jamais mis en cache */
-var VERSION='carnet-20261114-1938';
+var VERSION='carnet-20261115-1353';
 var SHELL=[
  "./",
  "index.html",
@@ -26,6 +26,16 @@ var SHELL=[
  "js/modeles.js",
  "js/liens.js",
  "js/mots.js",
+ "js/tableaux2.js",
+ "js/listes.js",
+ "js/mobile2.js",
+ "js/export.js",
+ "js/etiquettes.js",
+ "js/pomodoro.js",
+ "js/rogner.js",
+ "js/versions.js",
+ "js/jeton.js",
+ "js/raccourcis.js",
  "js/menus.js",
  "js/couleurs.js",
  "js/mobile.js",

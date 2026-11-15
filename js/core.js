@@ -69,7 +69,7 @@ function render(){
  n.sections.forEach(function(s,i){h+='<div class="sec'+(i==D.cur.s?' on':'')+'" data-s="'+i+'">'+ck('s',i)+gp('s',i)+'<b style="background:'+qa(s.color)+'"></b><span>'+esc(s.name)+'</span><button class="x" data-rs="'+i+'" title="Renommer">✎</button><button class="x" data-ds="'+i+'" title="Supprimer">🗑</button></div>'});
  h+='<button class="link" data-a="snew">+ Nouvelle section</button>'+(bulk&&bulk.k=='s'?bbar():'<button class="link" data-a="bulks">☑ Sélectionner des sections</button>');
  $('secs').innerHTML=h;
- var s=sec(),g='<div class="top"><button class="btn" data-a="pnew">＋ Ajouter une page</button><button class="btn" data-a="gen">Pré-créer des semaines</button></div>'+(bulk&&bulk.k=='p'?bbar():'<div class="top"><button class="btn sm" data-a="bulkp">☑ Sélectionner des pages</button></div>')+'<div class="top"><button class="btn sm" data-a="tpl">📋 Modèles</button><button class="btn sm" data-a="todo">☑ À faire</button><button class="btn sm" data-a="trash">🗑 Corbeille</button></div>';
+ var s=sec(),g='<div class="top"><button class="btn" data-a="pnew">＋ Ajouter une page</button><button class="btn" data-a="gen">Pré-créer des semaines</button></div>'+(bulk&&bulk.k=='p'?bbar():'<div class="top"><button class="btn sm" data-a="bulkp">☑ Sélectionner des pages</button></div>')+'<div class="top"><button class="btn sm" data-a="tpl">📋 Modèles</button><button class="btn sm" data-a="todo">☑ À faire</button><button class="btn sm" data-a="trash">🗑 Corbeille</button></div><div class="top"><button class="btn sm" data-a="tags">🏷 Étiquettes</button><button class="btn sm" data-a="export">⬇ Exporter</button><button class="btn sm" data-a="hist">🕘 Historique</button></div>';
  if(s)s.pages.forEach(function(p,i){g+='<div class="pg'+(i==D.cur.p?' on':'')+'" data-p="'+i+'">'+ck('p',i)+gp('p',i)+dot(p.st,i)+'<span>'+esc(p.title)+'</span><button class="x" data-rp="'+i+'" title="Renommer">✎</button><button class="x" data-dup="'+i+'" title="Dupliquer la page">⧉</button><button class="x" data-dp="'+i+'" title="Supprimer">🗑</button></div>'});
  $('pgs').innerHTML=g;if(bulk)bsync();
  var p=pg(),m=$('main');
@@ -114,7 +114,7 @@ document.addEventListener('input',function(e){if(!e.target.closest||!e.target.cl
 document.addEventListener('keydown',function(e){if(e.target.id=='title'&&e.key=='Enter'){e.preventDefault();e.target.blur()}});
 document.addEventListener('focusin',function(e){if(e.target.tagName=='TD')lastTd=e.target});
 document.addEventListener('focusout',function(e){var b=e.target.closest&&e.target.closest('.box');if(b&&b.dataset.k=='t'){var c=b.querySelector('.bc');if(c&&!c.textContent.trim()&&!c.querySelector('img,table')){b.remove();ser()}}});
-document.addEventListener('dblclick',function(e){var t=e.target;if(t.id=='page'||(t.classList&&t.classList.contains('tools'))){var r=$('page').getBoundingClientRect();newText(e.clientX-r.left,e.clientY-r.top)}});
+document.addEventListener('dblclick',function(e){var t=e.target;if(RO())return;if(t.id=='page'||(t.classList&&t.classList.contains('tools'))){var r=$('page').getBoundingClientRect();newText(e.clientX-r.left,e.clientY-r.top)}});
 document.addEventListener('paste',function(e){if(!e.target.closest||!e.target.closest('#page'))return;var fs=[].filter.call(e.clipboardData.files||[],function(f){return /^image\//.test(f.type)});if(fs.length){e.preventDefault();fs.forEach(putImg)}});
 $('secs').addEventListener('change',function(e){if(e.target.id=='nsel'){ser();D.cur={n:+e.target.value,s:0,p:0};save();render()}});
 document.addEventListener('click',function(e){

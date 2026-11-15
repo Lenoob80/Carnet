@@ -18,7 +18,7 @@ function merge(){var q=rect();if(!q)return;var f=q.g[q.r1][q.c1].td,o=selCells()
 function split(){var q=rect();if(!q)return;var td=sel.a,x=pos(q.g,td);if(!x||(td.rowSpan<2&&td.colSpan<2))return;var rs=td.rowSpan,cs=td.colSpan;td.rowSpan=1;td.colSpan=1;
  for(var r=x.r;r<x.r+rs;r++)for(var c=x.c;c<x.c+cs;c++){if(r==x.r&&c==x.c)continue;var ref=null,row=q.g[r]||[];for(var k=c+1;k<row.length;k++){var y=row[k];if(y&&y.r==r&&y.td!==td){ref=y.td;break}}if(t0(sel.t).rows[r])t0(sel.t).rows[r].insertBefore(mkTd(sel.t),ref)}}
 function t0(t){return t}
-function tbOp(op){var q=rect();if(!q){toast('Clique d’abord dans une cellule du tableau.');return}if(op=='x'){rangeMode=true;toast('Touche maintenant la cellule de fin.');return}if(op=='d'){nMode='fill';nOpen();return}var t=sel.t;
+function tbOp(op){if(typeof TB2!=='undefined'&&TB2[op]){TB2[op]();return}var q=rect();if(!q){toast('Clique d’abord dans une cellule du tableau.');return}if(op=='x'){rangeMode=true;toast('Touche maintenant la cellule de fin.');return}if(op=='d'){nMode='fill';nOpen();return}var t=sel.t;
  if(op=='ar')addRow(t,q.g,q.r2+1);
  else if(op=='ac')addCol(t,q.g,q.c2+1);
  else if(op=='dr'){for(var r=q.r2;r>=q.r1;r--)delRow(t,grid(t),r)}

@@ -48,6 +48,6 @@ function openTrash(){
 }
 ACTIONS.trash=openTrash;
 POST.push(function(){
-  var b=document.querySelector('[data-a="trash"]');
-  if(b){var n=(D.trash||[]).length;b.textContent='🗑 Corbeille'+(n?' ('+n+')':'')}
+  var n=(D.trash||[]).length;
+  [].forEach.call(document.querySelectorAll('[data-a="trash"]'),function(b){b.textContent='🗑 Corbeille'+(n?' ('+n+')':'')});
 });
