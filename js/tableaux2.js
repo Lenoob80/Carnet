@@ -44,7 +44,7 @@ RZ.addEventListener('pointerdown',function(e){
   var td=selCells()[0];if(!td)return;
   var t=td.closest('table'),g=grid(t),x=pos(g,td),ci=x.c+td.colSpan-1,
       tr=t.rows[x.r+td.rowSpan-1],col=ensureCols(t).children[ci],
-      sx=e.clientX,sy=e.clientY,w0=col.getBoundingClientRect().width,h0=tr.getBoundingClientRect().height;
+      sx=e.clientX,sy=e.clientY,w0=parseFloat(col.style.width)||80,h0=tr.getBoundingClientRect().height;
   RZ.setPointerCapture(e.pointerId);
   function mv(ev){
     col.style.width=Math.max(30,Math.round(w0+ev.clientX-sx))+'px';
@@ -61,6 +61,53 @@ document.addEventListener('selectionchange',function(){setTimeout(placeRz,0)});
 document.addEventListener('scroll',placeRz,true);
 window.addEventListener('resize',placeRz);
 POST.push(placeRz);
+
+/* ---- tirer directement sur un trait du tableau : le curseur change, on glisse (souris / stylet) ---- */
+var EDGE=5,EDRAG=false;
+function edgeAt(e){
+  if(e.pointerType=='touch'||DR.on||RO())return null;
+  var td=e.target.closest&&e.target.closest('#page td,#page th');
+  if(!td)return null;
+  var t=td.closest('table'),x=pos(grid(t),td);
+  if(!x)return null;
+  var r=td.getBoundingClientRect(),
+      dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,
+      dx=Math.min(dl,dr),dy=Math.min(dt,db);
+  if(dx<=EDGE&&dx<=dy){                                  // trait vertical : largeur de colonne
+    var i=dr<=dl?x.c+td.colSpan-1:x.c-1;
+    return i>=0?{t:t,k:'c',i:i}:null;
+  }
+  if(dy<=EDGE){                                          // trait horizontal : hauteur de ligne
+    var j=db<=dt?x.r+td.rowSpan-1:x.r-1;
+    return j>=0?{t:t,k:'r',i:j}:null;
+  }
+  return null;
+}
+document.addEventListener('pointermove',function(e){
+  if(EDRAG||e.buttons)return;
+  var ed=edgeAt(e),cl=document.body.classList;
+  cl.toggle('rz-col',!!ed&&ed.k=='c');cl.toggle('rz-row',!!ed&&ed.k=='r');
+});
+document.addEventListener('pointerdown',function(e){
+  if(e.button!==0)return;
+  var ed=edgeAt(e);
+  if(!ed)return;
+  e.preventDefault();e.stopPropagation();EDRAG=true;
+  var t=ed.t,sx=e.clientX,sy=e.clientY,col,tr,w0,h0;
+  if(ed.k=='c'){col=ensureCols(t).children[ed.i];w0=parseFloat(col.style.width)||80}
+  else{tr=t.rows[ed.i];h0=tr.getBoundingClientRect().height}
+  document.body.classList.add(ed.k=='c'?'rz-col':'rz-row');
+  function mv(ev){
+    if(ed.k=='c'){col.style.width=Math.max(30,Math.round(w0+ev.clientX-sx))+'px';fixW(t)}
+    else tr.style.height=Math.max(18,Math.round(h0+ev.clientY-sy))+'px';
+    placeRz();
+  }
+  function end(){
+    document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',end);document.removeEventListener('pointercancel',end);
+    EDRAG=false;document.body.classList.remove('rz-col','rz-row');ser();
+  }
+  document.addEventListener('pointermove',mv);document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+},true);
 
 /* ---- dupliquer une ligne / une colonne (contenu, couleurs et bordures compris) ---- */
 function dupRow(t,g,r){
@@ -157,7 +204,7 @@ TB2.ctr=function(){
 TB2.cw=function(){
   var q=needRect();if(!q)return;
   var td=sel.a,t=sel.t,x=pos(q.g,td),ci=x.c+td.colSpan-1,col=ensureCols(t).children[ci];
-  ask('Largeur de la colonne (en pixels)',Math.round(col.getBoundingClientRect().width),function(v){
+  ask('Largeur de la colonne (en pixels)',Math.round(parseFloat(col.style.width)||80),function(v){
     var n=Math.max(30,+v||0);if(!n)return;
     col.style.width=n+'px';fixW(t);ser();
   });

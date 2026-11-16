@@ -1,5 +1,17 @@
 /* Rédaction : listes à plusieurs niveaux (Tab / Maj+Tab), titres, date et heure, encadrés, symboles, sommaire des titres */
 
+/* ---- sans curseur dans un texte : on crée une zone de texte et on y place le curseur ---- */
+function caretStart(el){
+  var r=document.createRange();r.selectNodeContents(el);r.collapse(true);
+  var s=getSelection();s.removeAllRanges();s.addRange(r);
+}
+function newTextWith(html,inner,atEnd){
+  var e=addBox('t',30,nextY(),300,html),bc=e.querySelector('.bc'),t=inner?bc.querySelector(inner):bc;
+  bc.focus();
+  if(atEnd)caretEnd(t||bc);else caretStart(t||bc);
+  return e;
+}
+
 /* ---- styles de listes ---- */
 var LSTY=[
   ['ls-disc','●  Puces rondes','ul'],['ls-square','■  Puces carrées','ul'],['ls-arrow','➔  Flèches','ul'],
@@ -17,12 +29,16 @@ function topList(l){
   return l;
 }
 function listToggle(kind){
-  if(!rest()){toast('Clique d’abord dans un texte.');return}
+  if(!rest()){newTextWith('<'+kind+'><li><br></li></'+kind+'>','li');return}
   document.execCommand(kind=='ul'?'insertUnorderedList':'insertOrderedList');
   ser();
 }
 function setListStyle(cls){
-  if(!rest()){toast('Clique d’abord dans un texte.');return}
+  if(!rest()){
+    var d=LSTY.filter(function(s){return s[0]==cls})[0];
+    if(d)newTextWith('<'+d[2]+' class="'+cls+'"><li><br></li></'+d[2]+'>','li');
+    return;
+  }
   var l=curList();
   if(cls=='off'){if(l)document.execCommand(l.tagName=='UL'?'insertUnorderedList':'insertOrderedList');ser();return}
   var want=LSTY.filter(function(s){return s[0]==cls})[0][2];
@@ -67,7 +83,7 @@ function insText(txt){
   if(rest()){document.execCommand('insertText',false,txt);ser();return}
   var cs=selCells();
   if(cs.length){cs.forEach(function(td){td.appendChild(document.createTextNode(txt))});ser();return}
-  toast('Clique d’abord dans un texte ou une cellule.');
+  newTextWith(esc(txt),null,true);
 }
 function insDate(){insText(new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}
 function insTime(){insText(new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}))}
@@ -144,6 +160,6 @@ document.addEventListener('click',function(e){
   }
   if(t.closest('[data-fa]')){ali=(ali+1)%3;fmtT(['l','c','r'][ali]);return}
   if((b=t.closest('#pop [data-ls]'))){closePop();setListStyle(b.dataset.ls);return}
-  if((b=t.closest('#pop [data-ch]'))){if(rest()){document.execCommand('insertText',false,b.dataset.ch);ser()}return}
+  if((b=t.closest('#pop [data-ch]'))){if(rest()){document.execCommand('insertText',false,b.dataset.ch);ser()}else newTextWith(esc(b.dataset.ch),null,true);return}
 });
 ACTIONS.tocp=makeTocPage;

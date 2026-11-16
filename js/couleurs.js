@@ -34,7 +34,9 @@ function lumCss(c){
 function swatch(c){return '<button class="psw" data-pc="'+c+'" style="background:'+c+'" title="'+c+'"></button>'}
 
 /* ---- fenêtre de choix de couleur ---- */
+var POPT=0;                       // instant d'ouverture : évite qu'un même clic ouvre puis referme la fenêtre
 function placePop(anchor,pt){
+  POPT=Date.now();
   pop.style.display='block';
   var w=pop.offsetWidth,h=pop.offsetHeight,x,y,r=anchor&&anchor.getBoundingClientRect();
   if(r){x=r.left;y=r.bottom+4}else{x=pt.x;y=pt.y}
@@ -155,7 +157,7 @@ document.addEventListener('click',function(e){
   if(t.closest('[data-fc]')){clearFormat();return}
   if((b=t.closest('#pop [data-pc]'))){var k=pop.dataset.k;closePop();applyColor(k,b.dataset.pc);return}
   if((b=t.closest('#pop [data-cx]'))){var c=b.dataset.cx;closePop();ctxDo(c);return}
-  if(!t.closest('#pop'))closePop();
+  if(!t.closest('#pop')&&Date.now()-POPT>200)closePop();
 });
 document.addEventListener('change',function(e){
   if(e.target.id=='pcc'){var k=pop.dataset.k;closePop();applyColor(k,e.target.value)}

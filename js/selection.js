@@ -2,6 +2,7 @@
    clic, Ctrl/Maj + clic, rectangle de sélection, Ctrl+A, déplacement groupé (avec magnétisme),
    suppression, duplication. Les objets verrouillés ne bougent pas et ne se suppriment pas. */
 
+var BANDMOVED=false;
 function boxes(){return [].slice.call(document.querySelectorAll('#page .box'))}
 function selected(){return boxes().filter(function(b){return b.classList.contains('msel')})}
 function isLocked(b){return b.dataset.lock=='1'}
@@ -112,6 +113,7 @@ function startBand(e,mod){
   function end(){
     document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',end);document.removeEventListener('pointercancel',end);
     rb.remove();
+    BANDMOVED=moved;
     if(!moved&&!mod)clearSel();
   }
   document.addEventListener('pointermove',mv);document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
@@ -153,4 +155,13 @@ document.addEventListener('click',function(e){
   if(!b)return;
   var f=OBJ[b.dataset.o];
   if(f)f();
+});
+
+/* un clic sur le fond de la page (souris ou doigt) crée une zone de texte à cet endroit */
+document.addEventListener('click',function(e){
+  var id=e.target.id;
+  if((id!=='page'&&id!=='tg')||!$('page')||DR.on||RO())return;
+  if(BANDMOVED){BANDMOVED=false;return}                  // on vient de tracer un rectangle de sélection
+  var r=$('page').getBoundingClientRect();
+  newText(e.clientX-r.left,e.clientY-r.top-20);
 });

@@ -50,7 +50,7 @@ var FB='<div id="fb"><div class="tabs">'+
 
   panel('insert',[
     fgrp('Ajouter',
-      fbtn('data-a="tb"','T Texte','Zone de texte (ou double-clic sur la page)')+fbtn('data-a="img"','🖼 Image','Ou glisse des images depuis l’ordinateur sur la page')+
+      fbtn('data-a="tb"','T Texte','Zone de texte (ou clique n’importe où sur la page)')+fbtn('data-a="img"','🖼 Image','Ou glisse des images depuis l’ordinateur sur la page')+
       fbtn('data-a="xls"','📊 Excel / CSV','Ou glisse le fichier sur la page')+fbtn('data-a="ntab"','▦ Tableau')+'%T%'),
     fgrp('Texte',
       fbtn('data-l="date"','📅 Date','Date du jour (Ctrl+;)')+fbtn('data-l="time"','🕒 Heure','Heure (Ctrl+Maj+;)')+
