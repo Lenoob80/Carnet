@@ -112,8 +112,12 @@ var FB='<div id="fb"><div class="tabs">'+
     fgrp('Sauvegardes',
       fbtn('data-a="hist"','🕘 Historique','Versions précédentes et points de restauration')+
       fbtn('data-a="weight"','📦 Données','Poids des données, compresser les images')),
+    fgrp('Aide',
+      fbtn('data-a="pronote"','🎓 Pronote','Emploi du temps, devoirs et notes Pronote')+fbtn('data-a="help"','❓ Aide','Guide, raccourcis et solutions (F1)')+fbtn('data-a="tour"','▶ Visite guidée','Revoir la visite guidée')+
+      fbtn('data-a="palette"','⌘ Actions','Taper ce que tu veux faire (Ctrl+/)')),
     fgrp('Outils',
       fbtn('data-a="pomo"','🍅 Minuteur','Pomodoro : 25 min de travail, 5 min de pause')+
+      fbtn('data-a="tokinfo"','🔑 Jeton','Date d’expiration du jeton GitHub')+
       fbtn('data-a="install"','📲 Installer','Ajouter le carnet à l’écran d’accueil'))
   ])+
 '</div>';

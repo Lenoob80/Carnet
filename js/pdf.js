@@ -21,7 +21,7 @@ async function makePdf(){
       onclone:function(doc){
         doc.documentElement.setAttribute('data-theme','light');
         var st=doc.createElement('style');
-        st.textContent='.bh,.br{display:none!important}.box,.box:hover{border-color:transparent!important;background:none!important}.ms,.msel{outline:none!important}.guide,#dsvg{display:none!important}#page{background:none!important}';
+        st.textContent='.bh,.br{display:none!important}.box,.box:hover{border-color:transparent!important;background:none!important}.ms,.msel{outline:none!important}.guide,#dsvg,.emptycard{display:none!important}#page{background:none!important}';
         doc.head.appendChild(st);
       }
     });

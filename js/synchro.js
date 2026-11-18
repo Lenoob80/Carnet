@@ -56,19 +56,20 @@ function cids(){var n=nb(),s=n&&n.sections[D.cur.s],p=s&&s.pages[D.cur.p];return
 function relocate(c){var ni=D.nbs.findIndex(function(x){return x.id==c[0]});if(ni<0)return;var n=D.nbs[ni],si=n.sections.findIndex(function(x){return x.id==c[1]});if(si<0){D.cur={n:ni,s:0,p:0};return}var pi=n.sections[si].pages.findIndex(function(x){return x.id==c[2]});D.cur={n:ni,s:si,p:Math.max(0,pi)}}
 function editing(){var a=document.activeElement;return !!(a&&a.closest&&a.closest('#page'))||(typeof DR!='undefined'&&DR.on)}
 /* le document synchronisé contient les carnets, la corbeille et les modèles */
-function docStr(){return JSON.stringify({nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[]})}
-function docOf(){return {v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[]}}
+function docStr(){return JSON.stringify({nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[],pro:D.pro||{}})}
+function docOf(){return {v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[],pro:D.pro||{}}}
 function baseDoc(){var b=null;try{b=BASE?JSON.parse(BASE):null}catch(e){}if(Array.isArray(b))b={nbs:b};return b||{}}
 function keepLocal(b,l,r){return l}
-function adopt(rem){D.nbs=rem.nbs;D.trash=rem.trash||[];D.tpl=rem.tpl||[];BASE=docStr();LH=H(BASE)}
+function adopt(rem){D.nbs=rem.nbs;D.trash=rem.trash||[];D.tpl=rem.tpl||[];D.pro=rem.pro||{};BASE=docStr();LH=H(BASE)}
 function mergeDoc(rem){
   var b=baseDoc();
   D.nbs=mArr(b.nbs||[],D.nbs,rem.nbs,mN);
   D.trash=mArr(b.trash||[],D.trash||[],rem.trash||[],keepLocal);
   D.tpl=mArr(b.tpl||[],D.tpl||[],rem.tpl||[],keepLocal);
+  D.pro=mergePro(b.pro||{},D.pro||{},rem.pro||{});
 }
 function purgeTrash(){var lim=Date.now()-30*864e5;D.trash=(D.trash||[]).filter(function(e){return e.at>lim})}
-async function cache(){if(!K)return;try{await kvSet('data',await seal({v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[],cur:D.cur,base:BASE,dirty:dirty}))}catch(e){toast('Stockage local indisponible.')}}
+async function cache(){if(!K)return;try{await kvSet('data',await seal({v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[],pro:D.pro||{},cur:D.cur,base:BASE,dirty:dirty}))}catch(e){toast('Stockage local indisponible.')}}
 async function persist(){await cache();if(dirty)syncNow()}
 async function syncNow(){
  if(busy||!CFG||!K)return;busy=true;setSt('⟳ Synchronisation…');
@@ -99,10 +100,10 @@ async function boot(){
  if(!c){c=localStorage.getItem('carnet-data');legacy=!!c}
  if(c){try{loc=await unseal(c)}catch(x){}}
  PEND={};((await kvGet('pend'))||[]).forEach(function(i){PEND[i]=1});
- if(loc){D={cur:loc.cur||{n:0,s:0,p:0},nbs:loc.nbs,trash:loc.trash||[],tpl:loc.tpl||[]};BASE=loc.base||null;dirty=!!loc.dirty;ETAG=null}
+ if(loc){D={cur:loc.cur||{n:0,s:0,p:0},nbs:loc.nbs,trash:loc.trash||[],tpl:loc.tpl||[],pro:loc.pro||{}};BASE=loc.base||null;dirty=!!loc.dirty;ETAG=null}
  else{var rem=await pull();
-  if(rem&&typeof rem=='object'){D={cur:{n:0,s:0,p:0},nbs:rem.nbs,trash:rem.trash||[],tpl:rem.tpl||[]};BASE=docStr();dirty=false}
-  else{D={cur:{n:0,s:0,p:0},nbs:[newNb('Rapport de stage')],trash:[],tpl:[]};BASE=null;dirty=true}}
+  if(rem&&typeof rem=='object'){D={cur:{n:0,s:0,p:0},nbs:rem.nbs,trash:rem.trash||[],tpl:rem.tpl||[],pro:rem.pro||{}};BASE=docStr();dirty=false}
+  else{D={cur:{n:0,s:0,p:0},nbs:[newNb('Rapport de stage')],trash:[],tpl:[],pro:{}};BASE=null;dirty=true}}
  D.nbs=fix({nbs:D.nbs}).nbs;purgeTrash();LH=BASE?H(BASE):0;
  if(await migImgs())dirty=true;
  render();await cache();if(legacy)localStorage.removeItem('carnet-data');
@@ -136,7 +137,8 @@ function bump(){clearTimeout(idle);if(K)idle=setTimeout(lockNow,15*60000)}
 ['click','keydown','pointerdown','touchstart'].forEach(function(ev){document.addEventListener(ev,bump,{passive:true})});
 async function lockNow(){try{ser();await cache();if(dirty&&navigator.onLine)await Promise.race([syncNow(),new Promise(function(r){setTimeout(r,4000)})])}catch(e){}location.reload()}
 $('bL').onclick=lockNow;
-$('bK').onclick=function(){try{sessionStorage.setItem('carnet-chg','1')}catch(e){}lockNow()};
+function goChangeToken(){try{sessionStorage.setItem('carnet-chg','1')}catch(e){}lockNow()}
+$('bK').onclick=function(){openTokenInfo()};
 document.addEventListener('visibilitychange',function(){if(!K)return;if(document.hidden){try{ser()}catch(e){}cache()}else syncNow()});
 window.addEventListener('online',function(){syncNow()});
 /* ---- annuler / rétablir (15 derniers états de la page) ---- */

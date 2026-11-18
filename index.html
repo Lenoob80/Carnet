@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Carnet">
 <meta name="theme-color" content="#1c1f23">
 <meta name="format-detection" content="telephone=no">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; frame-src about:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https:; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; frame-src about:">
 <style>
 :root{--bg:#fff;--side:#e8eef2;--text:#1f2328;--muted:#6b7580;--line:#c9d1d8;--head:#f1f1f1;--gray:#808080;--accent:#7719aa;--sel:#e6e6e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1f23;--side:#262b31;--text:#e6e8ea;--muted:#9aa4ae;--line:#434b54;--head:#2b3036;--gray:#555b62;--accent:#c58af0;--sel:#3a4047;color-scheme:dark}}
@@ -148,6 +148,54 @@ body.ro #bRO{border-color:var(--accent);background:var(--sel)}
 .chip b{margin-left:6px;cursor:pointer}.chip.add{border-style:dashed;color:var(--muted);border-color:var(--line)}.chip.on{background:var(--accent);color:var(--bg)}
 #expb{background:#fff3cd;color:#664d03;padding:6px 12px;font-size:13px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
 #expb.bad{background:#f8d7da;color:#842029}
+#bK.tok-warn,[data-a="tokinfo"].tok-warn{border-color:#e8922a!important;color:#e8922a}
+#bK.tok-bad,[data-a="tokinfo"].tok-bad{border-color:#d33!important;color:#d33}
+/* onglet Pronote */
+#vsw{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+#vsw button{border:0;background:none;color:var(--text);padding:0 11px;height:34px;cursor:pointer;font-size:15px}
+#vsw button.on{background:var(--accent);color:#fff}
+#pro{display:none;padding:14px 18px 80px;max-width:1200px;margin:0 auto}
+body.pro #app,body.pro #bMenu,body.pro #bTools,body.pro #bRO,body.pro #wc{display:none!important}
+body.pro #pro{display:block}
+.prh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.prh h2{margin:0}.prs{color:var(--muted);font-size:12px}
+.prt{display:flex;gap:4px;margin:10px 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.prt button{border:0;background:none;color:var(--muted);padding:8px 14px;cursor:pointer;border-bottom:2px solid transparent;font:inherit;white-space:nowrap}
+.prt button.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+.prnav{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}.prnav .btn.on{border-color:var(--accent);background:var(--sel)}
+.prnext{background:var(--sel);border-radius:8px;padding:8px 12px;margin-bottom:8px}.prnext.now{border-left:4px solid #43a047}
+.pweek{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:8px}
+.pday{border:1px solid var(--line);border-radius:10px;padding:6px;min-height:80px}.pday.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pdh{font-weight:700;margin-bottom:6px;text-align:center}
+.pe{border-left:4px solid var(--accent);background:var(--sel);border-radius:6px;padding:5px 7px;margin-bottom:5px;font-size:13px}
+.pe.now{border-left-color:#43a047}.pe.cancel{border-left-color:#e53935;opacity:.65}.pe.cancel .ps{text-decoration:line-through}
+.pt{color:var(--muted);font-size:12px}.ps{font-weight:600}.pl{color:var(--muted);font-size:12px}
+.prempty{text-align:center;padding:30px 10px;color:var(--text)}.prempty p{color:var(--muted)}
+.hwdone .mi{opacity:.5;text-decoration:line-through}
+.pgen{color:#fff;border-radius:10px;padding:6px 14px;font-size:26px;font-weight:700}.pgen small{font-size:12px;font-weight:400;margin-left:6px}
+details.psub{border:1px solid var(--line);border-radius:10px;padding:4px 10px;margin-bottom:8px}
+details.psub summary{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 0}
+.pn{flex:1;min-width:0;font-weight:600}.pbar{flex:2;height:8px;background:var(--sel);border-radius:4px;overflow:hidden}.pbar i{display:block;height:100%}
+.pset h3{margin:18px 0 4px}.prhelp{color:var(--muted);font-size:13px;line-height:1.5}.pset textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font:inherit}
+.pset input:not([type=checkbox]){padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font:inherit;width:100%}
+@media(max-width:760px){.pweek{grid-template-columns:1fr}#pro{padding:10px 10px 90px}#vsw button{padding:0 9px}}
+/* aide : visite guidée, pages vides, centre d'aide */
+#bHelp{flex:none;height:36px;padding:0 10px}
+#tour{display:none;position:fixed;inset:0;z-index:300}
+#tourhl{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.62);border:2px solid var(--accent);pointer-events:none;transition:all .25s}
+#tourcard{position:fixed;width:min(340px,92vw);background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 10px 36px rgba(0,0,0,.5)}
+#tourt{font-weight:700;font-size:16px;margin-bottom:6px}#tourx{line-height:1.5}
+#tourd{display:flex;gap:5px;margin-top:10px}#tourd i{width:7px;height:7px;border-radius:50%;background:var(--line)}#tourd i.on{background:var(--accent)}
+.emptycard{position:absolute;left:50%;top:150px;transform:translateX(-50%);width:min(520px,92%);background:var(--side);border:1px dashed var(--line);border-radius:12px;padding:16px;text-align:center;z-index:2}
+.emptycard .eg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hint{margin:10px 4px;padding:10px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:13px}
+details.hsec{border-bottom:1px solid var(--line);padding:6px 0}details.hsec summary{cursor:pointer;font-weight:600;padding:4px 0}
+details.hsec ul,details.hsec ol{margin:6px 0 6px;padding-left:20px;line-height:1.55}
+table.keys{width:100%;border-collapse:collapse}table.keys td{border:0;border-bottom:1px solid var(--line);padding:5px 6px;font-size:13px;vertical-align:top}
+kbd{background:var(--sel);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font:12px monospace;white-space:nowrap}
+.mit.on{background:var(--sel)}
+details.lkhelp{margin:10px 0 0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}details.lkhelp summary{cursor:pointer;color:var(--accent)}details.lkhelp ol{margin:6px 0;padding-left:18px;line-height:1.5}
+@media(max-width:760px){.emptycard{top:60px}.emptycard .eg{grid-template-columns:repeat(2,1fr)}}
+@media print{.emptycard,#tour{display:none!important}}
 #pm,#bRO{flex:none;height:36px;padding:0 10px}#pm.on{border-color:var(--accent);background:var(--sel)}.box.msel .bh{opacity:1}
 .rband{position:absolute;border:1px dashed var(--accent);background:rgba(119,25,170,.14);z-index:9999;pointer-events:none}
 @media print{.box.msel,.guide{outline:none!important}.guide,#dtool,#dsvg{display:none!important}#page.gridon{background:none!important}}
@@ -206,7 +254,8 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 @media(max-width:760px){
  body{font-size:15px}
  #wc{display:none}
- #pm,#bRO{display:inline-flex;align-items:center;padding:0 8px}
+ #pm,#bRO,#bHelp{display:inline-flex;align-items:center;padding:0 8px}
+ #pm:not(.on){display:none}
  #bMenu,#bTools{display:inline-flex;align-items:center;height:36px;padding:0 10px;flex:none}
  #q{height:36px;font-size:16px}
  #app{display:block}
@@ -235,14 +284,22 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 </head>
 <body>
 <div id="sa"></div>
-<div id="sbar"><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><span id="wc" title="Nombre de mots de la page"></span><button class="btn" id="pm" title="Minuteur Pomodoro">🍅</button><button class="btn" id="bRO" title="Édition">✏️</button><div id="res"></div></div>
+<div id="sbar"><div id="vsw"><button class="on" data-v="note" title="Carnet">📓</button><button data-v="pro" title="Pronote : emploi du temps, devoirs, notes">🎓</button></div><button class="btn" id="bMenu" title="Carnets, sections et pages">☰</button><input id="q" type="search" placeholder="🔍 Rechercher…" title="Rechercher dans tous les carnets (Ctrl+K)" autocomplete="off"><button class="btn" id="bTools" title="Outils de mise en forme">🛠</button><span id="wc" title="Nombre de mots de la page"></span><button class="btn" id="pm" title="Minuteur Pomodoro">🍅</button><button class="btn" id="bRO" title="Édition">✏️</button><button class="btn" id="bHelp" title="Aide, visite guidée et raccourcis (F1)">❓</button><div id="res"></div></div>
 <div id="app"><div id="side"><nav id="secs"></nav><nav id="pgs"></nav><div id="stt"><span id="sts"></span><button class="btn sm" id="bT" title="Basculer clair / sombre">🌙</button><button class="btn sm" id="bX">💾 Exporter</button><button class="btn sm" id="bI">📥 Importer</button><button class="btn sm" id="bL" style="display:none">🔒 Verrouiller</button><button class="btn sm" data-a="install" title="Installer sur l’écran d’accueil">📲 Installer</button><button class="btn sm" id="bK" style="display:none" title="Changer le jeton GitHub">🔑 Jeton</button></div></div><main id="main"></main></div>
+<div id="pro"></div>
 <div id="bd"></div>
 <input type="file" id="fImg" accept="image/*" multiple hidden><input type="file" id="fXls" accept=".xlsx,.xls,.csv" hidden>
 <div id="lock"><div class="lk"><h2>📓 Mon carnet</h2><p id="lkMsg" style="margin:0;color:var(--muted)"></p>
+<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">Tes notes sont chiffrées sur cet appareil avant d’être envoyées sur ton dépôt GitHub privé.</p>
 <label>E-mail</label><input id="lkE" type="email" autocomplete="username">
 <label>Mot de passe</label><input id="lkP" type="password" autocomplete="current-password">
-<div id="lkSet" style="display:none"><label>Dépôt privé de données (pseudo/nom)</label><input id="lkR" autocomplete="off">
+<div id="lkSet" style="display:none">
+<details class="lkhelp"><summary>❓ Comment obtenir le dépôt et le jeton ?</summary><ol>
+<li>Sur <b>github.com</b>, crée un dépôt <b>privé</b> vide (ex. <code>carnet-data</code>).</li>
+<li>Va dans <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li>
+<li><b>Repository access</b> : « Only select repositories » → ton dépôt privé. <b>Permissions → Contents : Read and write</b>.</li>
+<li>Copie le jeton (il ne s’affiche qu’une fois) et colle-le ci-dessous. Dépôt = <code>pseudo/carnet-data</code>. Note aussi sa date d’expiration.</li>
+<li>L’e-mail et le mot de passe choisis ici <b>chiffrent</b> tes notes : ils ne sont <b>pas récupérables</b>, garde-les.</li></ol></details><label>Dépôt privé de données (pseudo/nom)</label><input id="lkR" autocomplete="off">
 <label>Jeton GitHub (accès à ce dépôt uniquement)</label><input id="lkT" type="password" autocomplete="off">
 <label>Date d’expiration du jeton (facultatif)</label><input id="lkX" type="date"></div>
 <button class="btn" id="lkGo" style="margin-top:14px;border-color:var(--accent)">Se connecter</button><div><button class="link" id="lkCh" style="display:none">🔑 Changer le jeton / le dépôt</button></div><div id="lkErr"></div></div></div>
@@ -300,6 +357,8 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <script src="js/versions.js"></script>
 <script src="js/jeton.js"></script>
 <script src="js/raccourcis.js"></script>
+<script src="js/aide.js"></script>
+<script src="js/pronote.js"></script>
 <script src="js/menus.js"></script>
 <script src="js/couleurs.js"></script>
 <script src="js/mobile.js"></script>
