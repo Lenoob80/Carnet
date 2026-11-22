@@ -97,10 +97,11 @@ var HELP=[
     '<li><b>☰</b> ouvre carnets et pages, <b>🛠</b> la barre d’outils, <b>🔒</b> passe en lecture seule (le clavier ne s’ouvre plus quand tu fais défiler).</li>'+
     '<li>En écrivant, une mini-barre au-dessus du clavier donne gras, puces, numéros, retrait, alignement et case à cocher.</li></ul>'},
   {id:'pronote',t:'🎓 Onglet Pronote',h:'<ul><li>Le bouton <b>🎓</b> (en haut à gauche) bascule entre <b>📓 Carnet</b> et <b>🎓 Pronote</b>.</li>'+
-    '<li>Colle ton <b>lien iCal</b> (Pronote → Emploi du temps → icône iCal) dans ⚙ Réglages : tu obtiens l’emploi du temps de la semaine, les annulations et, si ton établissement les publie, les devoirs.</li>'+
-    '<li>Si le navigateur bloque le lien, importe le <b>fichier .ics</b> à la place.</li>'+
-    '<li>Les <b>notes</b>, absences et messages ne sont pas dans le calendrier : les notes se saisissent (ou s’importent en lot) dans 📊 Notes, avec moyennes et coefficients.</li>'+
-    '<li>Le lien iCal est comme un mot de passe : il est stocké <b>chiffré</b> avec le reste.</li></ul>'},
+    '<li><b>Compte ENT (Édifice…)</b> : onglet « 🔐 ENT (code QR) » dans ⚙ Réglages. Génère un QR code dans Pronote (Mon compte → Application mobile), choisis un code à 4 chiffres, lis le QR (capture ou caméra) et connecte-toi.</li>'+
+    '<li><b>Connexion directe</b> (comme Papillon) : identifiant et mot de passe Pronote, ou QR code. Il faut un petit <b>relais Cloudflare</b> à toi et la bibliothèque Pawnote : tout est expliqué dans <b>GUIDE-PRONOTE.md</b>. Le mot de passe n’est jamais enregistré.</li>'+
+    '<li>Tu obtiens l’emploi du temps, les devoirs, les <b>notes et moyennes</b> (avec ta moyenne calculée selon les coefficients).</li>'+
+    '<li>Bouton <b>🧪 Essayer avec la démo</b> pour tester sans risque. <b>Diagnostic</b> en cas de problème.</li>'+
+    '<li>Alternative sans relais : lien ou fichier <b>iCal</b> (cours et devoirs seulement) ; les notes se saisissent à la main.</li></ul>'},
   {id:'keys',t:'⌨ Raccourcis clavier',h:'<table class="keys">'+[
     ['Ctrl + K','Rechercher dans toutes les pages'],['Ctrl + /','⌘ Actions : taper ce que tu veux faire'],['F1','Cette aide'],
     ['Ctrl + S','Enregistrer et synchroniser'],['Ctrl + P','Télécharger la page en PDF'],['Ctrl + Z / Ctrl + Y','Annuler / rétablir (15 derniers états)'],

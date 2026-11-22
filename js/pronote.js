@@ -68,6 +68,7 @@ function importICS(text){
 
 /* ---------- actualisation depuis le lien ---------- */
 async function refreshPro(silent){
+  if(typeof pnLinked=='function'&&pnLinked())return pnRefresh(silent);
   var p=PR();
   if(!p.url){if(!silent)toast('Ajoute d’abord ton lien iCal dans ⚙ Réglages.');return}
   if(PV.busy)return;
@@ -103,6 +104,7 @@ function allHw(){
     var t=hwFrom(e);
     if(t)out.push({id:'ics-'+e.id,subject:e.sum,text:t,due:e.s,src:'Pronote',done:!!(p.hwdone&&p.hwdone['ics-'+e.id])});
   });
+  (p.pnhw||[]).forEach(function(h){out.push({id:h.id,subject:h.subject,text:h.text,due:h.due,src:'Pronote',done:!!h.done||!!(p.hwdone&&p.hwdone[h.id])})});
   (p.hw||[]).forEach(function(h){out.push({id:h.id,subject:h.subject,text:h.text,due:h.due,src:'manuel',done:!!h.done,manual:true})});
   return out;
 }
@@ -121,8 +123,9 @@ function openHw(){
 }
 
 /* ---------- notes ---------- */
+function allGrades(){return (PR().grades||[]).concat(PR().pngr||[])}
 function subjects(){
-  var s={};(PR().grades||[]).forEach(function(g){s[g.subject]=1});
+  var s={};allGrades().forEach(function(g){s[g.subject]=1});
   return Object.keys(s).sort(function(a,b){return a.localeCompare(b,'fr')});
 }
 function avgOf(list){
@@ -133,7 +136,7 @@ function avgOf(list){
 function generalAvg(){
   var p=PR(),num=0,den=0;
   subjects().forEach(function(s){
-    var a=avgOf((p.grades||[]).filter(function(g){return g.subject==s})),c=(p.coefs&&p.coefs[s])||1;
+    var a=avgOf(allGrades().filter(function(g){return g.subject==s})),c=(p.coefs&&p.coefs[s])||1;
     if(a!==null){num+=a*c;den+=c}
   });
   return den?num/den:null;
@@ -184,6 +187,7 @@ function importGrades(text){
 
 /* ---------- actions (clics) ---------- */
 function proAct(b){
+  if(typeof pnAct=='function'&&pnAct(b))return;
   var a=b.dataset.pr,id=b.dataset.id,p=PR();
   if(a=='tab'){PV.tab=b.dataset.v;paintPro();return}
   if(a=='prev'||a=='next'||a=='today'){PV.off=a=='today'?0:PV.off+(a=='next'?1:-1);paintPro();return}
@@ -279,10 +283,10 @@ function notesHtml(){
   return '<div class="prnav"><div class="pgen" style="background:'+gcolor(gen)+'">'+fr(gen)+'<small>/20 · moyenne générale</small></div><span style="flex:1"></span>'+
     '<button class="btn sm" data-pr="gcoefs">Coefficients</button><button class="btn sm" data-pr="gimp">Importer…</button><button class="btn sm" data-pr="gadd" style="border-color:var(--accent)">＋ Note</button></div>'+
     subs.map(function(s){
-      var gl=p.grades.filter(function(g){return g.subject==s}),a=avgOf(gl);
-      return '<details class="psub"><summary><span class="pn">'+esc(s)+'</span><span class="pbar"><i style="width:'+Math.max(2,a/20*100)+'%;background:'+gcolor(a)+'"></i></span><b style="color:'+gcolor(a)+'">'+fr(a)+'</b>'+spark(gl)+'</summary>'+
+      var gl=allGrades().filter(function(g){return g.subject==s}),a=avgOf(gl),pa=(p.pnavg||[]).filter(function(x){return x.subject==s&&x.klass!=null})[0];
+      return '<details class="psub"><summary><span class="pn">'+esc(s)+'</span><span class="pbar"><i style="width:'+Math.max(2,a/20*100)+'%;background:'+gcolor(a)+'"></i></span><b style="color:'+gcolor(a)+'">'+fr(a)+'</b>'+spark(gl)+'</summary>'+(pa?'<div class="prhelp">Moyenne de la classe : <b>'+fr(pa.klass)+'</b>'+(pa.min!=null?' · min '+fr(pa.min):'')+(pa.max!=null?' · max '+fr(pa.max):'')+'</div>':'')+
         gl.slice().sort(function(x,y){return x.date<y.date?1:-1}).map(function(g){
-          return '<div class="mrow"><div class="mi"><b>'+fr(g.value)+'/'+g.max+'</b> <small style="display:inline">coef '+g.coef+' · '+new Date(g.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+(g.label?' · '+esc(g.label):'')+'</small></div><button class="btn sm" data-pr="gedit" data-id="'+g.id+'">✎</button></div>';
+          return '<div class="mrow"><div class="mi"><b>'+fr(g.value)+'/'+g.max+'</b> <small style="display:inline">coef '+g.coef+' · '+new Date(g.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+(g.label?' · '+esc(g.label):'')+(g.classAvg!=null?' · classe '+fr(g.classAvg):'')+'</small></div>'+(g.src=='pronote'?'<span class="pnb">Pronote</span>':'<button class="btn sm" data-pr="gedit" data-id="'+g.id+'">✎</button>')+'</div>';
         }).join('')+'</details>';
     }).join('');
 }
@@ -292,7 +296,7 @@ function homeUrl(){
 }
 function setHtml(){
   var p=PR();
-  return '<div class="pset"><h3>Lien du calendrier Pronote (iCal)</h3>'+
+  return (typeof connHtml=='function'?connHtml():'')+'<div class="pset"><h3>Alternative : lien du calendrier Pronote (iCal)</h3>'+
     '<p class="prhelp">Sur Pronote (espace élève) : <b>Emploi du temps → icône iCal</b> → copie le lien. <b>Ce lien est comme un mot de passe</b> : il est stocké chiffré avec tes notes, ne le partage pas.</p>'+
     '<div class="row"><input id="pru" type="password" autocomplete="off" placeholder="https://…/pronote/ical/Edt_….ics?icalsecurise=…" value="'+qa(p.url||'')+'" style="flex:1"><button class="btn" data-pr="eye" title="Afficher / masquer">👁</button></div>'+
     '<label>Adresse de ton Pronote (pour le raccourci « Ouvrir Pronote », facultatif)</label><input id="prh" autocomplete="off" placeholder="https://…/pronote/" value="'+qa(p.home||'')+'">'+
@@ -328,7 +332,7 @@ function setView(v){
     try{ser()}catch(e){}
     paintPro();
     var p=PR();
-    if(p.url&&Date.now()-(p.fetched||0)>30*60e3)refreshPro(true);   // actualisation silencieuse
+    if((p.url||(typeof pnLinked=='function'&&pnLinked()))&&Date.now()-(p.fetched||0)>20*60e3)refreshPro(true);   // actualisation silencieuse
   }
   try{localStorage.setItem('carnet-view',v)}catch(e){}
 }
@@ -354,6 +358,7 @@ function newer(b,l,r){return (l.u||0)>=(r.u||0)?l:r}
 function mergePro(b,l,r){
   var o=Object.assign({},(l.u||0)>=(r.u||0)?l:r),lf=(l.fetched||0)>=(r.fetched||0)?l:r;
   o.events=lf.events||[];o.fetched=Math.max(l.fetched||0,r.fetched||0);
+  ['pnhw','pngr','pnavg','pnuser','pnLinked','conn'].forEach(function(k){if(lf[k]!==undefined)o[k]=lf[k];else if(l[k]!==undefined)o[k]=l[k];else o[k]=r[k]});
   o.grades=mArr(b.grades||[],l.grades||[],r.grades||[],newer);
   o.hw=mArr(b.hw||[],l.hw||[],r.hw||[],newer);
   o.hwdone=Object.assign({},r.hwdone||{},l.hwdone||{});
