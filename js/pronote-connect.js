@@ -59,6 +59,7 @@ function relayFetcher(conf){
         url=new URL(loc,url).toString();method='GET';body=null;
         continue;
       }
+      if(typeof text=='string')text=text.replace(/Start\s*\(\s*\{/g,'Start({');
       return pnResponse(status,text,h,url);
     }
   }
