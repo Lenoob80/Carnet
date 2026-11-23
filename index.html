@@ -408,6 +408,49 @@ body.c3notebook.c3focus #c3sidebar,body.c3notebook.focus #c3sidebar{display:none
 body.c3notebook.c3focus #sbar.c3top,body.c3notebook.focus #sbar.c3top{top:0!important}
 @media(max-width:760px){body.c3notebook #c3sidebar{min-height:49px!important;padding:6px 8px!important;gap:7px!important}body.c3notebook #c3sidebar .c3brand{display:none!important}body.c3notebook #c3nav{gap:4px!important}body.c3notebook #c3sidebar .c3navbtn{padding:6px 8px!important}body.c3notebook #c3sidebar .c3navbtn .c3ico{width:24px!important;height:24px!important}body.c3notebook #c3sidebar .c3navbtn b{font-size:11px!important}body.c3notebook #c3sidebar .c3sidebottom #c3Theme{display:none!important}body.c3notebook #sbar.c3top{top:49px!important}}
 </style>
+
+<style id="carnet-global-top-navigation-v2">
+/* Navigation principale horizontale sur TOUTES les rubriques de Carnet. */
+#c3sidebar{
+  position:sticky!important;top:0!important;left:auto!important;right:auto!important;bottom:auto!important;
+  width:100%!important;height:auto!important;min-height:58px!important;box-sizing:border-box!important;
+  padding:7px 14px!important;display:flex!important;flex-direction:row!important;align-items:center!important;
+  gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;transform:none!important;
+  border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;
+  box-shadow:0 3px 12px rgba(0,0,0,.08)!important;z-index:130!important;
+}
+#c3sidebar .c3brand{flex:0 0 auto!important;padding:0 12px 0 0!important;border:0!important}
+#c3sidebar .c3logo{width:32px!important;height:32px!important;border-radius:10px!important;font-size:18px!important}
+#c3sidebar .c3brand b{font-size:15px!important}
+#c3sidebar .c3brand small,#c3sidebar .c3navlabel{display:none!important}
+#c3nav{display:flex!important;flex:1 1 auto!important;align-items:center!important;gap:5px!important;min-width:max-content!important}
+#c3sidebar .c3navbtn{width:auto!important;min-width:max-content!important;flex:0 0 auto!important;padding:7px 10px!important;gap:7px!important;border-radius:9px!important}
+#c3sidebar .c3navbtn .c3ico{width:27px!important;height:27px!important;font-size:15px!important;border-radius:8px!important}
+#c3sidebar .c3navbtn b{font-size:12px!important;white-space:nowrap!important}
+#c3sidebar .c3navbtn small{display:none!important}
+#c3sidebar .c3sidebottom{display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:5px!important;margin:0!important;padding:0!important;border:0!important}
+#c3sidebar .c3sync{display:none!important}
+#c3sidebar .c3sidebottom .c3navbtn{font-size:11px!important;padding:7px 9px!important}
+#sbar.c3top{position:sticky!important;top:58px!important;margin-left:0!important;z-index:60!important}
+#app,#pro,#c3view{margin-left:0!important}
+body.c3notebook #c3sidebar{display:flex!important}
+/* Le mode Concentration masque uniquement la navigation globale. */
+body.c3focus #c3sidebar,body.focus #c3sidebar{display:none!important}
+body.c3focus #sbar.c3top,body.focus #sbar.c3top{top:0!important}
+body.c3focus #app,body.focus #app{margin-left:0!important}
+@media(max-width:760px){
+ #c3sidebar{min-height:50px!important;padding:6px 8px!important;gap:7px!important}
+ #c3sidebar .c3brand{display:none!important}
+ #c3nav{gap:4px!important}
+ #c3sidebar .c3navbtn{padding:6px 8px!important}
+ #c3sidebar .c3navbtn .c3ico{width:24px!important;height:24px!important}
+ #c3sidebar .c3navbtn b{font-size:11px!important}
+ #c3sidebar .c3sidebottom #c3Theme{display:none!important}
+ #sbar.c3top{top:50px!important;margin-left:0!important}
+ body.c3focus #sbar.c3top,body.focus #sbar.c3top{top:0!important}
+}
+</style>
+
 </head>
 <body>
 <div id="sa"></div>
