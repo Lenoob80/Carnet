@@ -298,6 +298,62 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 @media(max-width:900px){.dashstats{grid-template-columns:repeat(2,minmax(0,1fr))}.modern-week{grid-template-columns:repeat(var(--cols),minmax(230px,80vw))}}
 @media(max-width:620px){#pro{padding:10px 10px 80px}.dashhead{align-items:flex-start}.dashhead h2{font-size:22px}.dashcols{grid-template-columns:1fr}.dash-next{padding:16px}.dashstats{gap:7px}.dashstat{padding:10px}.dashstat b{font-size:18px}.prt{width:100%;overflow-x:auto}.prt button{padding:8px 10px;font-size:12px}.modern-week{grid-template-columns:repeat(var(--cols),minmax(82vw,1fr))}.weeknav{flex-wrap:wrap}.weeknav>div{width:100%}}
 
+
+/* Carnet 2.1 — devoirs et notes simplifiés */
+.hw-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0}
+.hw-filters{display:flex;gap:7px;flex-wrap:wrap}
+.hw-filters .on{background:var(--sel);border-color:var(--accent);color:var(--text)}
+.hw-summary{font-size:12px;color:var(--muted);padding:5px 2px 12px}
+.hw-summary b{font-size:15px;color:var(--text)}
+.hw-overdue{color:#e35b5b;font-weight:700}
+.hw-group{margin:10px 0 22px}
+.hw-group-head{display:flex;align-items:center;gap:9px;margin:12px 0}
+.hw-group-head h3{font-size:14px;margin:0}
+.hw-group-head>span{font-size:11px;color:var(--muted);background:var(--side);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+.hw-card{display:flex;align-items:flex-start;gap:12px;padding:14px;margin:8px 0;background:var(--side);border:1px solid var(--line);border-radius:13px;min-width:0}
+.hw-card.is-late{border-left:3px solid #e35b5b}
+.hw-card.is-done{opacity:.72}
+.hw-check{display:flex;align-items:center;padding-top:2px;cursor:pointer;flex:none}
+.hw-check input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.hw-content{flex:1;min-width:0}
+.hw-title{font-size:13px;font-weight:800;line-height:1.4}
+.hw-text{font-size:13px;line-height:1.55;color:var(--muted);margin:5px 0 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.hw-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.hw-badge{border:1px solid var(--line);border-radius:20px;padding:2px 7px;font-size:10px}
+.hw-badge.late{color:#e35b5b;border-color:color-mix(in srgb,#e35b5b 45%,var(--line));font-weight:700}
+.hw-badge.personal{color:var(--accent)}
+.hw-delete{flex:none}
+.hw-empty{padding:18px;text-align:center;color:var(--muted);font-size:13px;background:var(--side);border:1px dashed var(--line);border-radius:12px}
+.hw-card.is-done .hw-title,.hw-card.is-done .hw-text{text-decoration:line-through}
+.grades-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:12px 0 8px}
+.grades-average{display:flex;align-items:baseline;gap:6px;padding:12px 16px;border-radius:13px;background:var(--side);border:1px solid var(--line)}
+.grades-average-label{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin-right:7px}
+.grades-average strong{font-size:27px;line-height:1;color:var(--text)}
+.grades-average>span:last-child{font-size:12px;color:var(--muted)}
+.grades-actions{display:flex;gap:7px;flex-wrap:wrap}
+.grades-caption{font-size:11px;color:var(--muted);margin:10px 2px 14px}
+.grades-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grade-card{background:var(--side);border:1px solid var(--line);border-radius:13px;overflow:hidden;min-width:0}
+.grade-card>summary{list-style:none;cursor:pointer;padding:14px}
+.grade-card>summary::-webkit-details-marker{display:none}
+.grade-card-main{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
+.grade-subject{font-size:13px;font-weight:800;overflow-wrap:anywhere}
+.grade-progress{grid-column:1;grid-row:2;height:6px;background:var(--sel);border-radius:20px;overflow:hidden}
+.grade-progress i{display:block;height:100%;border-radius:20px}
+.grade-score{grid-column:2;grid-row:1 / span 2;font-size:17px;font-weight:800;white-space:nowrap}
+.grade-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;color:var(--muted);font-size:10px}
+.grade-card-foot span{color:var(--accent);font-weight:700}
+.grade-details{border-top:1px solid var(--line);padding:3px 12px 8px}
+.grade-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.grade-item:last-child{border-bottom:0}
+.grade-item>div:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.grade-item>div:first-child b{font-size:13px}
+.grade-item small{font-size:10px;color:var(--muted);overflow-wrap:anywhere}
+.grade-item-right{display:flex;align-items:center;gap:7px;flex:none}
+.grade-coef{font-size:10px;color:var(--muted)}
+@media(max-width:760px){.grades-list{grid-template-columns:1fr}.grades-top{align-items:flex-start}.grades-actions{width:100%}.grades-actions .btn{flex:1}}
+@media(max-width:480px){.hw-card{padding:11px;gap:9px}.hw-toolbar{align-items:stretch}.hw-toolbar>.btn{width:100%}.grades-average{width:100%}.grade-card>summary{padding:12px}}
+
 </style>
 </head>
 <body>

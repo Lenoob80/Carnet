@@ -14,6 +14,20 @@ function dayStart(d){var x=new Date(d);x.setHours(0,0,0,0);return x}
 function weekStart(d){var x=dayStart(d);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
 function sameDay(a,b){return dayStart(a).getTime()==dayStart(b).getTime()}
 function fr(v){return String(Math.round(v*100)/100).replace('.',',')}
+/* Les descriptions Pronote sont parfois du HTML brut : on les convertit en texte lisible. */
+function plainText(v){
+  var t=String(v==null?'':v);
+  t=t.replace(/<br\s*\/?\s*>/gi,'\n')
+     .replace(/<\/(?:div|p|li|tr|h[1-6])\s*>/gi,'\n')
+     .replace(/<li\b[^>]*>/gi,'• ')
+     .replace(/<[^>]*>/g,' ')
+     .replace(/[ \t]+/g,' ')
+     .replace(/\n\s*\n+/g,'\n')
+     .trim();
+  var box=document.createElement('textarea');
+  box.innerHTML=t;
+  return (box.value||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+}
 function toNum(v){var n=parseFloat(String(v).replace(',','.').replace(/\s/g,''));return isNaN(n)?null:n}
 function isoDay(ms){var d=new Date(ms);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
 
@@ -252,10 +266,10 @@ function daySummary(list){
 function homeHtml(){
   var p=PR(),events=(p.events||[]).filter(function(e){return !e.cancel}).sort(function(a,b){return a.s-b.s}),now=Date.now(),today=events.filter(function(e){return sameDay(e.s,now)}),next=events.filter(function(e){return e.e>now})[0],todo=allHw().filter(function(h){return !h.done}).sort(function(a,b){return a.due-b.due}),gen=generalAvg(),last=p.fetched?new Date(p.fetched).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'Jamais';
   var nextCard=next?'<div class="dash-next"><div class="dash-kicker">'+(next.s<=now?'COURS EN COURS':'PROCHAIN COURS')+'</div><div class="dash-time">'+hm(next.s)+' – '+hm(next.e)+'</div><h3>'+esc(next.sum)+'</h3><div class="pl">'+(next.loc?'📍 '+esc(next.loc):'')+'</div></div>':'<div class="dash-next"><div class="dash-kicker">PROCHAIN COURS</div><h3>Aucun cours à venir</h3><div class="pl">Profite de ton temps libre !</div></div>';
-  return '<div class="dashhead"><div><div class="dash-kicker">TON ESPACE SCOLAIRE</div><h2>Bonjour'+(p.pnuser?' '+esc(p.pnuser.split(' ')[0]):'')+' 👋</h2><div class="prs">Voici ton résumé scolaire.</div></div><button class="btn" data-pr="refresh">↻ Synchroniser</button></div>'+nextCard+
+  return '<div class="dashhead"><div><div class="dash-kicker">TON ESPACE SCOLAIRE</div><h2>Bonjour Jordann 👋</h2><div class="prs">Voici ton résumé scolaire.</div></div><button class="btn" data-pr="refresh">↻ Synchroniser</button></div>'+nextCard+
   '<div class="dashstats"><div class="dashstat"><span>📅</span><b>'+today.length+'</b><small>Cours aujourd’hui</small></div><div class="dashstat"><span>📚</span><b>'+todo.length+'</b><small>Devoirs à faire</small></div><div class="dashstat"><span>📊</span><b>'+(gen===null?'—':fr(gen)+'/20')+'</b><small>Moyenne calculée</small></div><div class="dashstat"><span>🔄</span><b class="dashdate">'+esc(last)+'</b><small>Dernière synchro</small></div></div>'+
   '<div class="dashcols"><section class="dashpanel"><div class="dashpanelhead"><h3>📅 Aujourd’hui</h3><button class="link" data-pr="tab" data-v="week">Voir l’agenda →</button></div>'+(today.length?today.map(function(e,i){return (i?lessonGapHtml(today[i-1],e):'')+'<div class="dashlesson"><small>'+hm(e.s)+' – '+hm(e.e)+'</small><b>'+esc(e.sum)+'</b><span>'+ (e.loc?'📍 '+esc(e.loc):'')+'</span></div>'}).join(''):'<p class="prhelp">Aucun cours prévu aujourd’hui.</p>')+'</section>'+
-  '<section class="dashpanel"><div class="dashpanelhead"><h3>📚 À ne pas oublier</h3><button class="link" data-pr="tab" data-v="hw">Tous les devoirs →</button></div>'+(todo.length?todo.slice(0,5).map(function(h){return '<div class="dashhw"><b>'+esc(h.subject)+'</b><span>'+esc(h.text)+'</span><small>'+new Date(h.due).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+'</small></div>'}).join(''):'<p class="prhelp">Aucun devoir en attente 🎉</p>')+'</section></div>'+
+  '<section class="dashpanel"><div class="dashpanelhead"><h3>📚 À ne pas oublier</h3><button class="link" data-pr="tab" data-v="hw">Tous les devoirs →</button></div>'+(todo.length?todo.slice(0,5).map(function(h){return '<div class="dashhw"><b>'+esc(h.subject)+'</b><span>'+esc(plainText(h.text))+'</span><small>'+new Date(h.due).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+'</small></div>'}).join(''):'<p class="prhelp">Aucun devoir en attente 🎉</p>')+'</section></div>'+
   '<div class="dashfoot"><span class="syncdot"></span> Synchronisation automatique toutes les 15 minutes lorsque Carnet est ouvert. <button class="link" data-pr="tab" data-v="set">Réglages</button></div>';
 }
 function weekHtml(){
@@ -282,28 +296,56 @@ function weekHtml(){
 function hwHtml(){
   var list=allHw(),today=dayStart(new Date()).getTime(),f=PV.hw;
   list=list.filter(function(h){return f=='all'||(f=='todo'?!h.done:h.done)}).sort(function(a,b){return a.due-b.due});
-  return '<div class="prnav"><button class="btn sm'+(f=='todo'?' on':'')+'" data-pr="hwf" data-v="todo">À faire</button><button class="btn sm'+(f=='done'?' on':'')+'" data-pr="hwf" data-v="done">Faits</button>'+
-    '<button class="btn sm'+(f=='all'?' on':'')+'" data-pr="hwf" data-v="all">Tous</button><span style="flex:1"></span><button class="btn sm" data-pr="hwadd" style="border-color:var(--accent)">＋ Ajouter un devoir</button></div>'+
-    (list.length?list.map(function(h){
-      var late=!h.done&&h.due<today;
-      return '<div class="mrow'+(h.done?' hwdone':'')+'"><input type="checkbox" data-pr="hwtoggle" data-id="'+qa(h.id)+'"'+(h.done?' checked':'')+' style="width:20px;height:20px">'+
-        '<div class="mi"><b>'+esc(h.subject)+'</b> — '+esc(h.text)+'<small'+(late?' style="color:#e53935"':'')+'>'+(h.src=='Pronote'?'séance du ':'pour le ')+new Date(h.due).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+(late?' · en retard':'')+' · '+h.src+'</small></div>'+
-        (h.manual?'<button class="btn sm" data-pr="hwdel" data-id="'+h.id+'" title="Supprimer">✕</button>':'')+'</div>';
-    }).join(''):'<div class="prempty"><p>'+(f=='todo'?'Aucun devoir à faire 🎉':'Rien à afficher.')+'<br><span style="color:var(--muted)">Les devoirs de Pronote apparaissent ici s’ils sont publiés dans ton calendrier iCal ; sinon ajoute-les à la main.</span></p></div>');
+  var todo=list.filter(function(h){return !h.done}),done=list.filter(function(h){return h.done});
+  function card(h){
+    var late=!h.done&&h.due<today,txt=plainText(h.text);
+    return '<article class="hw-card'+(h.done?' is-done':'')+(late?' is-late':'')+'">'+
+      '<label class="hw-check"><input type="checkbox" data-pr="hwtoggle" data-id="'+qa(h.id)+'"'+(h.done?' checked':'')+'><span class="hw-checkmark"></span></label>'+
+      '<div class="hw-content"><div class="hw-title">'+esc(h.subject||'Devoir')+'</div>'+
+      (txt?'<p class="hw-text">'+esc(txt)+'</p>':'')+
+      '<div class="hw-meta"><span class="hw-date">'+(h.src=='Pronote'?'📅 ':'📝 ')+new Date(h.due).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+'</span>'+
+      (late?'<span class="hw-badge late">En retard</span>':'')+(h.src=='Pronote'?'<span class="hw-badge">Pronote</span>':'<span class="hw-badge personal">Personnel</span>')+'</div></div>'+
+      (h.manual?'<button class="btn sm hw-delete" data-pr="hwdel" data-id="'+qa(h.id)+'" title="Supprimer ce devoir" aria-label="Supprimer">×</button>':'')+
+      '</article>';
+  }
+  var content='';
+  if(f=='todo'||f=='all'){
+    content+='<section class="hw-group"><div class="hw-group-head"><h3>À faire</h3><span>'+todo.length+'</span></div>'+
+      (todo.length?todo.map(card).join(''):'<div class="hw-empty">🎉 Aucun devoir en attente.</div>')+'</section>';
+  }
+  if(f=='done'||f=='all'){
+    content+='<section class="hw-group"><div class="hw-group-head"><h3>Terminés</h3><span>'+done.length+'</span></div>'+
+      (done.length?done.map(card).join(''):'<div class="hw-empty">Les devoirs terminés apparaîtront ici.</div>')+'</section>';
+  }
+  return '<div class="hw-toolbar"><div class="hw-filters">'+
+    '<button class="btn sm'+(f=='todo'?' on':'')+'" data-pr="hwf" data-v="todo">À faire</button>'+
+    '<button class="btn sm'+(f=='done'?' on':'')+'" data-pr="hwf" data-v="done">Terminés</button>'+
+    '<button class="btn sm'+(f=='all'?' on':'')+'" data-pr="hwf" data-v="all">Tous</button></div>'+
+    '<button class="btn" data-pr="hwadd" style="border-color:var(--accent)">＋ Ajouter un devoir</button></div>'+
+    '<div class="hw-summary"><b>'+todo.length+'</b> devoir'+(todo.length>1?'s':'')+' restant'+(todo.length>1?'s':'')+
+    (todo.some(function(h){return h.due<today})?' · <span class="hw-overdue">'+todo.filter(function(h){return h.due<today}).length+' en retard</span>':'')+'</div>'+
+    (content||'<div class="hw-empty">Aucun devoir à afficher.</div>');
 }
 function notesHtml(){
-  var p=PR(),subs=subjects(),gen=generalAvg();
-  if(!subs.length)return '<div class="prempty"><div style="font-size:34px">📊</div><b>Aucune note</b><p>Pronote ne donne pas les notes au calendrier : ajoute-les à la main ou colle-les en lot.</p>'+
-    '<div class="row" style="justify-content:center"><button class="btn" data-pr="gadd" style="border-color:var(--accent)">＋ Ajouter une note</button><button class="btn" data-pr="gimp">Importer…</button></div></div>';
-  return '<div class="prnav"><div class="pgen" style="background:'+gcolor(gen)+'">'+fr(gen)+'<small>/20 · moyenne générale</small></div><span style="flex:1"></span>'+
-    '<button class="btn sm" data-pr="gcoefs">Coefficients</button><button class="btn sm" data-pr="gimp">Importer…</button><button class="btn sm" data-pr="gadd" style="border-color:var(--accent)">＋ Note</button></div>'+
-    subs.map(function(s){
-      var gl=allGrades().filter(function(g){return g.subject==s}),a=avgOf(gl),pa=(p.pnavg||[]).filter(function(x){return x.subject==s&&x.klass!=null})[0];
-      return '<details class="psub"><summary><span class="pn">'+esc(s)+'</span><span class="pbar"><i style="width:'+Math.max(2,a/20*100)+'%;background:'+gcolor(a)+'"></i></span><b style="color:'+gcolor(a)+'">'+fr(a)+'</b>'+spark(gl)+'</summary>'+(pa?'<div class="prhelp">Moyenne de la classe : <b>'+fr(pa.klass)+'</b>'+(pa.min!=null?' · min '+fr(pa.min):'')+(pa.max!=null?' · max '+fr(pa.max):'')+'</div>':'')+
-        gl.slice().sort(function(x,y){return x.date<y.date?1:-1}).map(function(g){
-          return '<div class="mrow"><div class="mi"><b>'+fr(g.value)+'/'+g.max+'</b> <small style="display:inline">coef '+g.coef+' · '+new Date(g.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+(g.label?' · '+esc(g.label):'')+(g.classAvg!=null?' · classe '+fr(g.classAvg):'')+'</small></div>'+(g.src=='pronote'?'<span class="pnb">Pronote</span>':'<button class="btn sm" data-pr="gedit" data-id="'+g.id+'">✎</button>')+'</div>';
-        }).join('')+'</details>';
-    }).join('');
+  var p=PR(),subs=subjects(),gen=generalAvg(),all=allGrades();
+  if(!subs.length)return '<div class="prempty"><div style="font-size:34px">📊</div><b>Aucune note pour le moment</b><p>Ajoute une note ou importe un tableau pour suivre tes résultats.</p>'+
+    '<div class="row" style="justify-content:center"><button class="btn" data-pr="gadd" style="border-color:var(--accent)">＋ Ajouter une note</button><button class="btn" data-pr="gimp">Importer des notes</button></div></div>';
+  return '<div class="grades-top"><div class="grades-average"><span class="grades-average-label">MOYENNE GÉNÉRALE</span><strong>'+fr(gen)+'</strong><span>/ 20</span></div>'+
+    '<div class="grades-actions"><button class="btn sm" data-pr="gcoefs">Coefficients</button><button class="btn sm" data-pr="gimp">Importer</button><button class="btn" data-pr="gadd" style="border-color:var(--accent)">＋ Ajouter une note</button></div></div>'+
+    '<div class="grades-caption">'+all.length+' note'+(all.length>1?'s':'')+' répartie'+(all.length>1?'s':'')+' dans '+subs.length+' matière'+(subs.length>1?'s':'')+'</div>'+
+    '<div class="grades-list">'+subs.map(function(sub){
+      var gl=all.filter(function(g){return g.subject==sub}),a=avgOf(gl),pa=(p.pnavg||[]).filter(function(x){return x.subject==sub&&x.klass!=null})[0];
+      var ordered=gl.slice().sort(function(x,y){return x.date<y.date?1:-1});
+      return '<details class="grade-card"><summary><div class="grade-card-main"><div class="grade-subject">'+esc(sub)+'</div>'+
+        '<div class="grade-progress"><i style="width:'+Math.max(2,Math.min(100,a/20*100))+'%;background:'+gcolor(a)+'"></i></div>'+
+        '<div class="grade-score" style="color:'+gcolor(a)+'">'+fr(a)+'/20</div></div>'+
+        '<div class="grade-card-foot">'+gl.length+' note'+(gl.length>1?'s':'')+(pa?' · classe '+fr(pa.klass)+'/20':'')+' <span>Voir le détail⌄</span></div></summary>'+
+        '<div class="grade-details">'+ordered.map(function(g){
+          return '<div class="grade-item"><div><b>'+fr(g.value)+'/'+g.max+'</b><small>'+new Date(g.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})+
+            (g.label?' · '+esc(g.label):'')+'</small></div><div class="grade-item-right"><span class="grade-coef">coef. '+fr(g.coef||1)+'</span>'+
+            (g.src=='pronote'?'<span class="pnb">Pronote</span>':'<button class="btn sm" data-pr="gedit" data-id="'+qa(g.id)+'" title="Modifier cette note">Modifier</button>')+'</div></div>';
+        }).join('')+'</div></details>';
+    }).join('')+'</div>';
 }
 function homeUrl(){
   var p=PR(),m=/^(https?:\/\/[^?#]*?\/pronote\/)/i.exec(p.url||'');
@@ -361,6 +403,16 @@ prf.onchange=function(e){
   var r=new FileReader();r.onload=function(){if(importICS(String(r.result)))paintPro()};r.readAsText(f);
 };
 ACTIONS.pronote=function(){setView('pro')};
+/* Synchronisation périodique : uniquement tant que l'application est ouverte et visible. */
+if(!window.__carnetPronoteTimer){
+  window.__carnetPronoteTimer=setInterval(function(){
+    if(document.visibilityState==='visible'&&typeof pnLinked==='function'&&pnLinked()&&typeof pnRefresh==='function')pnRefresh(true);
+  },15*60*1000);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'&&typeof pnLinked==='function'&&pnLinked()&&Date.now()-(PR().fetched||0)>15*60*1000&&typeof pnRefresh==='function')pnRefresh(true);
+  });
+}
+
 var viewRestored=false;
 POST.push(function(){
   if(viewRestored)return;viewRestored=true;
