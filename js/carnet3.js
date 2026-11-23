@@ -11,6 +11,7 @@ function toast3(s){if(typeof toast==='function')toast(s)}
 function setTheme(v){C3.theme=v;var root=document.documentElement;if(v==='system')root.removeAttribute('data-theme');else root.setAttribute('data-theme',v);try{localStorage.setItem('carnet-theme-mode',v);if(v!=='system')localStorage.setItem('carnet-theme',v)}catch(e){};var b=$('c3Theme');if(b)b.textContent=v==='dark'?'☀ Clair':v==='light'?'☾ Sombre':'◐ Système'}
 function navItems(){return [
  ['home','⌂','Accueil','Résumé de ta journée','pronote','home'],
+ ['notebook','📓','Mon carnet','Éditeur complet · pages et notes personnelles','legacy'],
  ['agenda','▦','Agenda','Cours et pauses','pronote','week'],
  ['hw','☑','Devoirs','Échéances et suivi','pronote','hw'],
  ['grades','▤','Notes & résultats','Moyennes et simulateur','pronote','notes'],
@@ -36,8 +37,10 @@ function shell(){
 }
 function markNav(id){[].forEach.call(document.querySelectorAll('.c3navbtn[data-c3]'),function(b){b.classList.toggle('active',b.dataset.c3===id)})}
 function go(id){C3.page=id;markNav(id);document.body.classList.remove('c3menu','c3custom');$('c3view').style.display='none';
+ /* Restaurer l'ancien carnet complet : pages, blocs, tableaux, modèles, corbeille et outils. */
+ if(id==='notebook'){if(typeof setView==='function')setView('note');document.body.classList.remove('pro','c3custom');$('c3view').style.display='none';return}
  if(id==='home'||id==='agenda'||id==='hw'||id==='grades'){
-  document.body.classList.remove('c3custom');if(typeof setView==='function'){setView('pro');PV.tab=id==='grades'?'notes':id;paintPro()}
+  document.body.classList.remove('c3custom');if(typeof setView==='function'){setView('pro');var pronoteTab={home:'home',agenda:'week',hw:'hw',grades:'notes'};PV.tab=pronoteTab[id]||'home';paintPro()}
  }else{
   if(typeof setView==='function'&&document.body.classList.contains('pro'))setView('note');
   document.body.classList.add('c3custom');$('c3view').style.display='block';renderCustom();
