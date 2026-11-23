@@ -85,15 +85,10 @@ async function pnOpen(mode,conf,creds,demo){
 /* compte ENT (Édifice…) : on passe par le QR code de l'application mobile Pronote + un code à 4 chiffres */
 async function pnQrLogin(PW,session,dev,creds){
   if(typeof PW.loginQrCode!='function')throw new Error('loginQrCode introuvable dans la bibliothèque');
-  var q=creds.qr,
-      cleanUrl=String(q.url||'').replace(/\/mobile\.[a-z]+\.html.*$/i,'').replace(/\/+$/,''),
-      qClean=Object.assign({},q,{url:cleanUrl}),
-      shapes=[
-        {deviceUUID:dev,pin:creds.pin,qr:qClean},
-        {deviceUUID:dev,pin:creds.pin,qrCode:qClean},
-        {deviceUUID:dev,pin:creds.pin,qr:q},
-        {deviceUUID:dev,pin:creds.pin,qrCode:q}
-      ],err;
+  var q=creds.qr,shapes=[
+    {deviceUUID:dev,pin:creds.pin,qr:q},
+    {deviceUUID:dev,pin:creds.pin,qrCode:q}
+  ],err;
   for(var i=0;i<shapes.length;i++){
     try{return await PW.loginQrCode(session,shapes[i])}
     catch(e){err=e;if(!(e&&(e.name=='TypeError'||/undefined|not a function/i.test(e.message||''))))throw e}
