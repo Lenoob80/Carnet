@@ -21,23 +21,32 @@ function eachHeader(h,fn){
   if(Array.isArray(h))h.forEach(function(p){fn(p[0],p[1])});
   else Object.keys(h).forEach(function(k){fn(k,h[k])});
 }
-function pnResponse(status,text,headers){
-  return {status:status,ok:status>=200&&status<300,content:text,headers:headers,url:'',
+function pnResponse(status,text,headers,url){
+  return {status:status,ok:status>=200&&status<300,content:text,headers:headers,url:url||'',
     text:function(){return Promise.resolve(text)},json:function(){return Promise.resolve(JSON.parse(text))},
     arrayBuffer:function(){return Promise.resolve(new TextEncoder().encode(text).buffer)}};
 }
 function relayFetcher(conf){
-  var n=0,FORBID=/^(host|content-length|origin|referer|connection|accept-encoding|user-agent|cookie)$/i;
+  var n=0,jar={},FORBID=/^(host|content-length|origin|referer|connection|accept-encoding|user-agent|cookie)$/i;
+  function jarStr(){return Object.keys(jar).map(function(k){return k+'='+jar[k]}).join('; ')}
+  function saveCookies(sc){
+    if(!sc)return;
+    sc.split('\n').forEach(function(c){
+      var kv=c.split(';')[0].trim(),eq=kv.indexOf('=');
+      if(eq>0)jar[kv.slice(0,eq)]=kv.slice(eq+1);
+    });
+  }
   async function f(req){
     n++;
     var url=String(req.url||req),headers={},method=(req.method||'GET').toUpperCase(),hops=0,body=req.content!=null?req.content:req.body;
     eachHeader(req.headers,function(k,v){
-      if(/^cookie$/i.test(k))headers['x-relay-cookie']=v;
+      if(/^cookie$/i.test(k))saveCookies(v);
       else if(/^user-agent$/i.test(k))headers['x-relay-ua']=v;
       else if(!FORBID.test(k))headers[k]=v;
     });
     headers['x-relay-key']=conf.key||'';
     for(;;){
+      var ck=jarStr();if(ck)headers['x-relay-cookie']=ck;
       var init={method:method,headers:headers,cache:'no-store'};
       if(method!='GET'&&body!=null)init.body=typeof body=='string'?body:JSON.stringify(body);
       var r=await fetch(conf.relay.replace(/\/+$/,'')+'/?u='+encodeURIComponent(url),init);
@@ -45,13 +54,12 @@ function relayFetcher(conf){
       var status=+r.headers.get('x-relay-status')||r.status,text=await r.text(),h=new Headers(),loc=r.headers.get('x-relay-location'),sc=r.headers.get('x-relay-set-cookie'),ct=r.headers.get('content-type');
       if(ct)h.set('content-type',ct);
       if(loc)h.set('location',loc);
-      if(sc)try{h.set('set-cookie',sc)}catch(e){}
+      if(sc){saveCookies(sc);try{h.set('set-cookie',sc)}catch(e){}}
       if(status>=300&&status<400&&loc&&req.redirect!=='manual'&&hops++<5){      // on suit les redirections nous-mêmes
         url=new URL(loc,url).toString();method='GET';body=null;
-        if(sc)headers['x-relay-cookie']=sc.split('\n').map(function(c){return c.split(';')[0]}).join('; ');
         continue;
       }
-      return pnResponse(status,text,h);
+      return pnResponse(status,text,h,url);
     }
   }
   f.calls=function(){return n};
@@ -91,7 +99,7 @@ async function pnQrLogin(PW,session,dev,creds){
   ],err;
   for(var i=0;i<shapes.length;i++){
     try{return await PW.loginQrCode(session,shapes[i])}
-    catch(e){err=e;if(!(e&&(e.name=='TypeError'||/undefined|not a function/i.test(e.message||''))))throw e}
+    catch(e){err=e;if(!(e&&(e.name=='TypeError'||/undefined|not a function/i.test(e.message||''))))throw e}   // on ne réessaie que si la forme de l'appel était mauvaise
   }
   throw err;
 }
