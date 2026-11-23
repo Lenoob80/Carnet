@@ -32,7 +32,7 @@ npm install
 npm run build
 ```
 
-Cela crée **`js/vendor/pawnote.bundle.js`**. Envoie ce fichier sur ton dépôt GitHub (dossier `js/vendor/`), comme les autres fichiers du site.
+Cela crée et corrige automatiquement **`Carnet/js/vendor/pawnote.bundle.js`**. C’est le fichier réellement chargé par ton site GitHub Pages : envoie-le dans le dossier `js/vendor/` de ton dépôt.
 (Ne mets pas le dossier `node_modules` sur GitHub.)
 
 > **Licence** : Pawnote est sous **GPL-3.0**. Comme ton site est public, ajoute un fichier `LICENSE` (texte de la GPL-3.0, sur gnu.org) à ton dépôt, et laisse le code de ton site visible.
@@ -69,6 +69,10 @@ Ensuite, l'onglet 🎓 se met à jour tout seul à l'ouverture (toutes les 20 mi
 Sur un autre appareil (téléphone, ordinateur) : retourne dans Réglages et clique « Se connecter » une fois (les données, elles, sont déjà synchronisées).
 
 ---
+
+## Compatibilité PRONOTE 2026.2.5
+
+Le script de compilation applique aussi un correctif ciblé pour les serveurs qui renvoient le challenge d’authentification non chiffré (PRONOTE 2026.2.5 et versions compatibles). Il ne modifie pas le déchiffrement du QR code lui-même.
 
 ## Si ça ne marche pas
 
