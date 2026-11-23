@@ -86,13 +86,14 @@ async function pnOpen(mode,conf,creds,demo){
 async function pnQrLogin(PW,session,dev,creds){
   if(typeof PW.loginQrCode!='function')throw new Error('loginQrCode introuvable dans la bibliothèque');
   var q=creds.qr,shapes=[
+    {deviceUUID:dev,pin:creds.pin,qrCode:q},
     {deviceUUID:dev,pin:creds.pin,qr:q},
-    {deviceUUID:dev,pin:creds.pin,qr:{jeton:q.jeton,login:q.login,url:q.url}},
+    {deviceUUID:dev,pin:creds.pin,qrCode:{jeton:q.jeton,login:q.login,url:q.url,avecPageConnexion:!!q.avecPageConnexion}},
     {deviceUUID:dev,pin:creds.pin,jeton:q.jeton,login:q.login,url:q.url}
   ],err;
   for(var i=0;i<shapes.length;i++){
     try{return await PW.loginQrCode(session,shapes[i])}
-    catch(e){err=e;if(!(e&&(e.name=='TypeError'||/undefined|not a function/i.test(e.message||''))))throw e}   // on ne réessaie que si la forme de l'appel était mauvaise
+    catch(e){err=e;if(!(e&&(e.name=='TypeError'||/undefined|not a function/i.test(e.message||''))))throw e}
   }
   throw err;
 }
