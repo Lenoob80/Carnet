@@ -15,7 +15,6 @@ function navItems(){return [
  ['agenda','▦','Agenda','Cours et pauses','pronote','week'],
  ['hw','☑','Devoirs','Échéances et suivi','pronote','hw'],
  ['grades','▤','Notes & résultats','Moyennes et simulateur','pronote','notes'],
- ['courses','✎','Mes cours','Fiches et notes perso','custom'],
  ['docs','▣','Documents','Fichiers de cours','custom'],
  ['stats','◒','Statistiques','Progression scolaire','custom'],
  ['alerts','♧','Notifications','Nouveautés Pronote','custom'],
@@ -25,20 +24,21 @@ function shell(){
  if($('c3sidebar'))return;
  var s=document.createElement('aside');s.id='c3sidebar';s.innerHTML='<div class="c3brand"><div class="c3logo">C</div><div><b>Carnet</b><small>ESPACE SCOLAIRE</small></div></div><div class="c3navlabel">ESPACE DE TRAVAIL</div><nav id="c3nav"></nav><div class="c3sidebottom"><div class="c3sync" id="c3sync"><i></i><span>Prêt à synchroniser</span></div><button class="c3navbtn" id="c3Theme">◐ Système</button><button class="c3navbtn" data-c3="settings">⚙ Paramètres</button></div>';
  document.body.insertBefore(s,$('sbar'));
- var top=$('sbar');top.classList.add('c3top');top.insertAdjacentHTML('afterbegin','<button class="btn c3hamb" id="c3Hamb" aria-label="Ouvrir le menu">☰</button>');
+ var top=$('sbar');top.classList.add('c3top');top.insertAdjacentHTML('afterbegin','<button class="btn c3hamb" id="c3Hamb" aria-label="Ouvrir le menu">☰</button>');top.insertAdjacentHTML('beforeend','<button class="btn c3focusbtn" id="c3FocusBtn" title="Masquer le panneau latéral de l’ancien carnet">⛶ Concentration</button>');
  var v=document.createElement('section');v.id='c3view';v.setAttribute('aria-live','polite');document.body.appendChild(v);
  $('c3nav').innerHTML=navItems().map(function(n){return '<button class="c3navbtn" data-c3="'+n[0]+'"><span class="c3ico">'+n[1]+'</span><span><b>'+n[2]+'</b><small>'+n[3]+'</small></span>'+(n[0]==='alerts'?'<em id="c3badge" hidden>0</em>':'')+'</button>'}).join('');
  $('c3nav').addEventListener('click',function(e){var b=e.target.closest('[data-c3]');if(b)go(b.dataset.c3)});
  s.addEventListener('click',function(e){var b=e.target.closest('[data-c3]');if(b&&!b.closest('#c3nav'))go(b.dataset.c3)});
  $('c3Theme').onclick=function(){setTheme(C3.theme==='dark'?'light':C3.theme==='light'?'system':'dark')};
  $('c3Hamb').onclick=function(){document.body.classList.toggle('c3menu')};
+ $('c3FocusBtn').onclick=function(){var on=document.body.classList.toggle('c3focus');this.textContent=on?'⛶ Quitter le focus':'⛶ Concentration';this.setAttribute('aria-pressed',String(on))};
  $('vsw').style.display='none';
  var stored='system';try{stored=localStorage.getItem('carnet-theme-mode')||localStorage.getItem('carnet-theme')||'system'}catch(e){}setTheme(stored);
 }
 function markNav(id){[].forEach.call(document.querySelectorAll('.c3navbtn[data-c3]'),function(b){b.classList.toggle('active',b.dataset.c3===id)})}
-function go(id){C3.page=id;markNav(id);document.body.classList.remove('c3menu','c3custom');$('c3view').style.display='none';
+function go(id){C3.page=id;markNav(id);document.body.classList.remove('c3menu','c3custom','c3notebook');$('c3view').style.display='none';
  /* Restaurer l'ancien carnet complet : pages, blocs, tableaux, modèles, corbeille et outils. */
- if(id==='notebook'){if(typeof setView==='function')setView('note');document.body.classList.remove('pro','c3custom');$('c3view').style.display='none';return}
+ if(id==='notebook'){if(typeof setView==='function')setView('note');document.body.classList.remove('pro','c3custom');document.body.classList.add('c3notebook');$('c3view').style.display='none';return}
  if(id==='home'||id==='agenda'||id==='hw'||id==='grades'){
   document.body.classList.remove('c3custom');if(typeof setView==='function'){setView('pro');var pronoteTab={home:'home',agenda:'week',hw:'hw',grades:'notes'};PV.tab=pronoteTab[id]||'home';paintPro()}
  }else{

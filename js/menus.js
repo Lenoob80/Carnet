@@ -57,6 +57,8 @@ var FB='<div id="fb"><div class="tabs">'+
       fbtn('data-l="sym"','Ω Symboles','Ω ± ≈ ≤ ≥ Δ π √ …')+fbtn('data-l="sup"','x²','Exposant')+fbtn('data-l="sub"','x₂','Indice')),
     fgrp('Encadrés',
       fbtn('data-l="c_tip"','💡 Astuce')+fbtn('data-l="c_warn"','⚠️ Attention')+fbtn('data-l="c_note"','📌 À retenir')),
+    fgrp('Blocs de cours rapides',
+      fbtn('data-a="quick-definition"','Définition')+fbtn('data-a="quick-formula"','Formule')+fbtn('data-a="quick-example"','Exemple')+fbtn('data-a="quick-summary"','Résumé')),
     fgrp('Dessin',
       fbtn('data-a="draw"','✏ Dessiner','Dessin à main levée (souris, doigt ou stylet)')),
     fgrp('Liens',

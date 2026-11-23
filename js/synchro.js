@@ -71,7 +71,7 @@ function mergeDoc(rem){
 }
 function purgeTrash(){var lim=Date.now()-30*864e5;D.trash=(D.trash||[]).filter(function(e){return e.at>lim})}
 async function cache(){if(!K)return;try{await kvSet('data',await seal({v:1,nbs:D.nbs,trash:D.trash||[],tpl:D.tpl||[],pro:D.pro||{},c3:D.c3||{},cur:D.cur,base:BASE,dirty:dirty}))}catch(e){toast('Stockage local indisponible.')}}
-async function persist(){await cache();if(dirty)syncNow()}
+async function persist(){await cache();var a=document.getElementById('autoSaveState');if(a){a.textContent='✓ Enregistré sur cet appareil';a.className='autosave-state saved'}if(dirty)syncNow()}
 async function syncNow(){
  if(busy||!CFG||!K)return;busy=true;setSt('⟳ Synchronisation…');
  try{

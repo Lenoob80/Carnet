@@ -4,7 +4,7 @@ var DAYS=['LUNDI','MARDI','MERCREDI','JEUDI','VENDREDI'];
 var MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 var COLORS=['#1b4f8a','#2aa5d8','#2ba84a','#e8622a','#a23bb5','#d4a017'];
 var SUBJ=['MATHEMATIQUES<br>Me. DUQUESNE H.','CULTURE GENERALE ET EXPRESSION<br>M. SAUTIERE Y.','ANGLAIS<br>ME. LOYEZ V.','PHYSIQUE-CHIMIE<br>M. CLERY P.','PHYSIQUE-CHIMIE<br>M. MAILLARD P','Electrotechnique<br>INTEGRATION D’UN BIEN<br>M. BERLANCOURT F.','Automatismes<br>AP ET GESTION DE PROJETS<br>M. MIETTE S.','Analyse fonctionnelle et structurelle<br>M. FONTAINE B.','ORGANISATION DE LA MAINTENANCE<br>M. WEMAERE P.','TECHNIQUES DE MAINTENANCE<br>M. LELOUTRE L.','TECHNIQUES DE MAINTENANCE<br>M. WEMAERE P.','AP & Dossier de 1ere année<br>M. MAILLARD P.'];
-var D,lastTd=null,tm=null,qcb=null;
+var D,lastTd=null,tm=null,qcb=null,favOnly=false;
 function $(i){return document.getElementById(i)}
 function uid(){return Math.random().toString(36).slice(2,9)}
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
@@ -53,7 +53,7 @@ function load(){
   var o=localStorage.getItem(OLD);if(o){var q=JSON.parse(o);return fix({cur:{n:0,s:q.cur.s,p:q.cur.p},nbs:[{id:uid(),name:'Rapport de stage',sections:q.sections}]})}}catch(e){}
  return seed()
 }
-function save(){if(H(docStr())!==LH)dirty=true;clearTimeout(pt2);pt2=setTimeout(persist,600)}
+function save(){if(H(docStr())!==LH)dirty=true;var a=$('autoSaveState');if(a){a.textContent='Enregistrement…';a.className='autosave-state saving'}clearTimeout(pt2);pt2=setTimeout(persist,600)}
 function nb(){return D.nbs[D.cur.n]}
 function sec(){return nb().sections[D.cur.s]}
 function pg(){var s=sec();return s&&s.pages[D.cur.p]}
@@ -69,8 +69,8 @@ function render(){
  n.sections.forEach(function(s,i){h+='<div class="sec'+(i==D.cur.s?' on':'')+'" data-s="'+i+'">'+ck('s',i)+gp('s',i)+'<b style="background:'+qa(s.color)+'"></b><span>'+esc(s.name)+'</span><button class="x" data-rs="'+i+'" title="Renommer">✎</button><button class="x" data-ds="'+i+'" title="Supprimer">🗑</button></div>'});
  h+='<button class="link" data-a="snew">+ Nouvelle section</button>'+(bulk&&bulk.k=='s'?bbar():'<button class="link" data-a="bulks">☑ Sélectionner des sections</button>');
  $('secs').innerHTML=h;
- var s=sec(),g='<div class="top"><button class="btn" data-a="pnew">＋ Ajouter une page</button><button class="btn" data-a="gen">Pré-créer des semaines</button></div>'+(bulk&&bulk.k=='p'?bbar():'<div class="top"><button class="btn sm" data-a="bulkp">☑ Sélectionner des pages</button></div>')+'<div class="top"><button class="btn sm" data-a="tpl">📋 Modèles</button><button class="btn sm" data-a="todo">☑ À faire</button><button class="btn sm" data-a="trash">🗑 Corbeille</button></div><div class="top"><button class="btn sm" data-a="tags">🏷 Étiquettes</button><button class="btn sm" data-a="export">⬇ Exporter</button><button class="btn sm" data-a="hist">🕘 Historique</button></div><div class="top"><button class="btn sm" data-a="help">❓ Aide</button><button class="btn sm" data-a="palette">⌘ Actions</button></div>';
- if(s)s.pages.forEach(function(p,i){g+='<div class="pg'+(i==D.cur.p?' on':'')+'" data-p="'+i+'">'+ck('p',i)+gp('p',i)+dot(p.st,i)+'<span>'+esc(p.title)+'</span><button class="x" data-rp="'+i+'" title="Renommer">✎</button><button class="x" data-dup="'+i+'" title="Dupliquer la page">⧉</button><button class="x" data-dp="'+i+'" title="Supprimer">🗑</button></div>'});
+ var s=sec(),g='<div class="top c3pageactions"><button class="btn primary" data-a="pnew">＋ Nouvelle page</button><button class="btn sm" data-a="favfilter" aria-pressed="'+(favOnly?'true':'false')+'">'+(favOnly?'★ Favoris affichés':'☆ Favoris')+'</button></div>'+(bulk&&bulk.k=='p'?bbar():'<div class="top c3secondaryactions"><button class="btn sm" data-a="bulkp">☑ Sélection multiple</button><button class="btn sm" data-a="gen">Pré-créer des semaines</button></div>')+'<details class="c3moretools"><summary>Outils du carnet</summary><div class="top"><button class="btn sm" data-a="tpl">📋 Modèles</button><button class="btn sm" data-a="todo">☑ À faire</button><button class="btn sm" data-a="trash">🗑 Corbeille</button><button class="btn sm" data-a="tags">🏷 Étiquettes</button><button class="btn sm" data-a="export">⬇ Exporter</button><button class="btn sm" data-a="hist">🕘 Historique</button><button class="btn sm" data-a="help">❓ Aide</button><button class="btn sm" data-a="palette">⌘ Actions</button></div></details>';
+ if(s){var visiblePages=s.pages.map(function(p,i){return {p:p,i:i}}).filter(function(x){return !favOnly||x.p.fav});if(!visiblePages.length)g+='<div class="c3favempty">'+(favOnly?'Aucune page favorite dans cette section. Clique sur ☆ à côté d’une page pour l’ajouter.':'Aucune page. Crée ta première page.')+'</div>';visiblePages.forEach(function(x){var p=x.p,i=x.i;g+='<div class="pg'+(i==D.cur.p?' on':'')+'" data-p="'+i+'">'+ck('p',i)+gp('p',i)+dot(p.st,i)+'<span>'+esc(p.title)+'</span><button class="x c3star '+(p.fav?'isfav':'')+'" data-fav="'+i+'" title="'+(p.fav?'Retirer des favoris':'Ajouter aux favoris')+'" aria-label="'+(p.fav?'Retirer des favoris':'Ajouter aux favoris')+'">'+(p.fav?'★':'☆')+'</button><button class="x" data-rp="'+i+'" title="Renommer">✎</button><button class="x" data-dup="'+i+'" title="Dupliquer la page">⧉</button><button class="x" data-dp="'+i+'" title="Supprimer">🗑</button></div>'})}
  $('pgs').innerHTML=g;if(bulk)bsync();
  var p=pg(),m=$('main');
  if(!p){m.innerHTML='<p style="color:var(--muted)">Aucune page ici. Utilise « Ajouter une page ».</p>';return}
@@ -125,6 +125,7 @@ document.addEventListener('click',function(e){
  if(t.classList.contains('cb')){toggleCb(t);return}
  if(t.dataset&&t.dataset.st!==undefined){cycSt(+t.dataset.st);return}
  if(d.dup!==undefined){dupPage(+d.dup);return}
+ var favBtn=t.closest&&t.closest('[data-fav]');if(favBtn){var fi=+favBtn.dataset.fav,fp=sec().pages[fi];if(fp){fp.fav=!fp.fav;fp.u=Date.now();save();render()}return}
  if(t.classList.contains('bx')){var bb=t.closest('.box');if(bb.dataset.lock=='1'){toast('Objet verrouillé : déverrouille-le d’abord.');return}bb.remove();fit();ser();return}
  if(d.rs!==undefined){ser();var s=n.sections[+d.rs];ask('Nouveau nom de la section',s.name,function(v){if(v.trim()){s.name=v.trim();save();render()}});return}
  if(d.ds!==undefined){ser();var i=+d.ds;conf('Supprimer la section « '+n.sections[i].name+' » et toutes ses pages ? (récupérable 30 jours dans la corbeille)',function(){trashAdd('section',n.sections[i],{nb:n.id});n.sections.splice(i,1);D.cur.s=0;D.cur.p=0;save();render()});return}
@@ -134,6 +135,7 @@ document.addEventListener('click',function(e){
  var b=t.closest('[data-p]');if(b){if(bulk&&bulk.k=='p'){bpick('p',+b.dataset.p,e.shiftKey);return}ser();D.cur.p=+b.dataset.p;save();render();return}
  var ac=d.a;if(!ac)return;
  if(ACTIONS[ac]){ACTIONS[ac]();return}
+ if(ac=='favfilter'){favOnly=!favOnly;render();return}
  if(ac=='nnew'){ser();ask('Nom du nouveau carnet','Nouveau carnet',function(v){if(v.trim()){D.nbs.push(newNb(v.trim()));D.cur={n:D.nbs.length-1,s:0,p:0};save();render()}});return}
  if(ac=='nren'){ser();ask('Nouveau nom du carnet',n.name,function(v){if(v.trim()){n.name=v.trim();save();render()}});return}
  if(ac=='ndel'){ser();conf('Supprimer le carnet « '+n.name+' » et tout son contenu ?',function(){trashAdd('notebook',n,{});D.nbs.splice(D.cur.n,1);if(!D.nbs.length)D.nbs.push(newNb('Nouveau carnet'));D.cur={n:0,s:0,p:0};save();render()});return}
@@ -152,6 +154,7 @@ document.addEventListener('click',function(e){
  if(ac=='save'){saveNow();return}
  if(ac=='focus'){document.body.classList.toggle('focus');return}
  if(ac=='tb'){newText(30,nextY());return}
+ if(ac.indexOf('quick-')===0){var kind=ac.slice(6),cfg={definition:['Définition','Définition à compléter…','#e7f1ff'],formula:['Formule','Écris la formule et précise les unités…','#f1eaff'],example:['Exemple','Décris un exemple concret…','#e8f5e9'],summary:['Résumé','Les idées essentielles à retenir…','#fff4df']}[kind];if(cfg){var html='<div class="callout note" style="padding:12px;border-left:4px solid var(--accent);border-radius:8px;background:'+cfg[2]+'"><b>'+cfg[0]+'</b><br>'+cfg[1]+'</div>';var bx=addBox('t',30,nextY(),440,html);var ce=bx&&bx.querySelector('.bc');if(ce){ce.focus();var r=document.createRange();r.selectNodeContents(ce);r.collapse(false);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r)}ser()}return}
  var p2=pg();if(!p2)return;ser();
  if(ac=='mk'){var c0=['Matières'].concat(DAYS,['PROCHAINE ALTERNANCE']);p2.tab=tabHtml(c0,SUBJ.map(function(x){var r=[{t:x,g:0}];for(var i=0;i<6;i++)r.push({t:'',g:0});return r}))}
  if(ac=='rmtab')p2.tab=null;
