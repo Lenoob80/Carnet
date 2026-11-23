@@ -3,7 +3,7 @@
    Tout est stocké dans D.pro : chiffré et synchronisé comme le reste du carnet.
    Pronote ne donne PAS ici : notes, absences, messagerie, vie scolaire (voir « Réglages »). */
 
-var PV={tab:'week',off:0,hw:'todo',busy:false,msg:''};
+var PV={tab:'home',off:0,hw:'todo',busy:false,msg:''};
 function PR(){return D.pro||(D.pro={})}
 function touchPR(){PR().u=Date.now();save()}
 
@@ -236,33 +236,48 @@ function proAct(b){
 
 /* ---------- affichage ---------- */
 function emptyHtml(t,x){return '<div class="prempty"><div style="font-size:34px">🎓</div><b>'+t+'</b><p>'+x+'</p><button class="btn" data-pr="tab" data-v="set" style="border-color:var(--accent)">⚙ Ouvrir les réglages</button></div>'}
+function lessonGapHtml(prev,next){
+  var mins=Math.round((next.s-prev.e)/60000);
+  if(mins<15)return '';
+  var start=new Date(prev.e),end=new Date(next.s),mid=(start.getHours()*60+start.getMinutes()+end.getHours()*60+end.getMinutes())/2;
+  var lunch=mins>=35&&mid>=11*60&&mid<=14*60+30;
+  var label=lunch?'Pause déjeuner':(mins>=60?'Temps libre':'Pause');
+  var duration=mins>=60?Math.floor(mins/60)+' h'+(mins%60?' '+mins%60+' min':''):mins+' min';
+  return '<div class="pgap '+(lunch?'lunch':'')+'"><span class="pgapicon">'+(lunch?'🍽':'☕')+'</span><span class="pgapbody"><b>'+label+'</b><small>'+hm(prev.e)+' – '+hm(next.s)+'</small></span><strong>'+duration+'</strong></div>';
+}
+function daySummary(list){
+  var valid=list.filter(function(e){return !e.cancel&&!e.allDay}),mins=valid.reduce(function(n,e){return n+Math.max(0,e.e-e.s)/60000},0);
+  return valid.length+' cours · '+(mins>=60?Math.floor(mins/60)+' h'+(Math.round(mins%60)?' '+Math.round(mins%60)+' min':''):Math.round(mins)+' min');
+}
+function homeHtml(){
+  var p=PR(),events=(p.events||[]).filter(function(e){return !e.cancel}).sort(function(a,b){return a.s-b.s}),now=Date.now(),today=events.filter(function(e){return sameDay(e.s,now)}),next=events.filter(function(e){return e.e>now})[0],todo=allHw().filter(function(h){return !h.done}).sort(function(a,b){return a.due-b.due}),gen=generalAvg(),last=p.fetched?new Date(p.fetched).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'Jamais';
+  var nextCard=next?'<div class="dash-next"><div class="dash-kicker">'+(next.s<=now?'COURS EN COURS':'PROCHAIN COURS')+'</div><div class="dash-time">'+hm(next.s)+' – '+hm(next.e)+'</div><h3>'+esc(next.sum)+'</h3><div class="pl">'+(next.loc?'📍 '+esc(next.loc):'')+'</div></div>':'<div class="dash-next"><div class="dash-kicker">PROCHAIN COURS</div><h3>Aucun cours à venir</h3><div class="pl">Profite de ton temps libre !</div></div>';
+  return '<div class="dashhead"><div><div class="dash-kicker">TON ESPACE SCOLAIRE</div><h2>Bonjour'+(p.pnuser?' '+esc(p.pnuser.split(' ')[0]):'')+' 👋</h2><div class="prs">Voici ton résumé scolaire.</div></div><button class="btn" data-pr="refresh">↻ Synchroniser</button></div>'+nextCard+
+  '<div class="dashstats"><div class="dashstat"><span>📅</span><b>'+today.length+'</b><small>Cours aujourd’hui</small></div><div class="dashstat"><span>📚</span><b>'+todo.length+'</b><small>Devoirs à faire</small></div><div class="dashstat"><span>📊</span><b>'+(gen===null?'—':fr(gen)+'/20')+'</b><small>Moyenne calculée</small></div><div class="dashstat"><span>🔄</span><b class="dashdate">'+esc(last)+'</b><small>Dernière synchro</small></div></div>'+
+  '<div class="dashcols"><section class="dashpanel"><div class="dashpanelhead"><h3>📅 Aujourd’hui</h3><button class="link" data-pr="tab" data-v="week">Voir l’agenda →</button></div>'+(today.length?today.map(function(e,i){return (i?lessonGapHtml(today[i-1],e):'')+'<div class="dashlesson"><small>'+hm(e.s)+' – '+hm(e.e)+'</small><b>'+esc(e.sum)+'</b><span>'+ (e.loc?'📍 '+esc(e.loc):'')+'</span></div>'}).join(''):'<p class="prhelp">Aucun cours prévu aujourd’hui.</p>')+'</section>'+
+  '<section class="dashpanel"><div class="dashpanelhead"><h3>📚 À ne pas oublier</h3><button class="link" data-pr="tab" data-v="hw">Tous les devoirs →</button></div>'+(todo.length?todo.slice(0,5).map(function(h){return '<div class="dashhw"><b>'+esc(h.subject)+'</b><span>'+esc(h.text)+'</span><small>'+new Date(h.due).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+'</small></div>'}).join(''):'<p class="prhelp">Aucun devoir en attente 🎉</p>')+'</section></div>'+
+  '<div class="dashfoot"><span class="syncdot"></span> Synchronisation automatique toutes les 15 minutes lorsque Carnet est ouvert. <button class="link" data-pr="tab" data-v="set">Réglages</button></div>';
+}
 function weekHtml(){
   var p=PR(),ev=p.events||[];
-  if(!ev.length)return emptyHtml('Aucun emploi du temps pour l’instant','Colle ton lien iCal Pronote (ou importe le fichier .ics) dans les réglages.');
+  if(!ev.length)return emptyHtml('Aucun emploi du temps pour l’instant','Connecte-toi à Pronote dans ⚙ Réglages pour récupérer tes cours.');
   var mon=weekStart(new Date());mon.setDate(mon.getDate()+7*PV.off);
   var days=[],i,now=Date.now();
   for(i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d)}
-  var per=days.map(function(d){
-    return ev.filter(function(e){return e.s<dayStart(d).getTime()+864e5&&e.e>dayStart(d).getTime()}).sort(function(a,b){return a.s-b.s});
-  });
+  var per=days.map(function(d){return ev.filter(function(e){return e.s<dayStart(d).getTime()+864e5&&e.e>dayStart(d).getTime()}).sort(function(a,b){return a.s-b.s})});
   var upto=per[5].length||per[6].length?7:5;
-  var cur=ev.filter(function(e){return !e.cancel&&e.s<=now&&now<e.e})[0],
-      nxt=ev.filter(function(e){return !e.cancel&&e.s>now}).sort(function(a,b){return a.s-b.s})[0],
-      banner=cur?'<div class="prnext now">En cours : <b>'+esc(cur.sum)+'</b>'+(cur.loc?' · '+esc(cur.loc):'')+' · jusqu’à '+hm(cur.e)+'</div>':
-              nxt?'<div class="prnext">Prochain cours : <b>'+esc(nxt.sum)+'</b>'+(nxt.loc?' · '+esc(nxt.loc):'')+' · '+(sameDay(nxt.s,now)?'aujourd’hui':'le '+dmy(nxt.s))+' à '+hm(nxt.s)+'</div>':'';
+  var cur=ev.filter(function(e){return !e.cancel&&e.s<=now&&now<e.e})[0],nxt=ev.filter(function(e){return !e.cancel&&e.s>now}).sort(function(a,b){return a.s-b.s})[0];
+  var banner=cur?'<div class="prnext now">🟢 En cours : <b>'+esc(cur.sum)+'</b>'+(cur.loc?' · '+esc(cur.loc):'')+' · jusqu’à '+hm(cur.e)+'</div>':nxt?'<div class="prnext">⏭ Prochain cours : <b>'+esc(nxt.sum)+'</b>'+(nxt.loc?' · '+esc(nxt.loc):'')+' · '+(sameDay(nxt.s,now)?'aujourd’hui':'le '+dmy(nxt.s))+' à '+hm(nxt.s)+'</div>':'';
   var head=PV.off==0?'Cette semaine':(PV.off==1?'Semaine prochaine':PV.off==-1?'Semaine dernière':'');
-  return banner+'<div class="prnav"><button class="btn sm" data-pr="prev">‹</button><button class="btn sm" data-pr="today">Aujourd’hui</button><button class="btn sm" data-pr="next">›</button>'+
-    '<b>'+head+' <span style="color:var(--muted);font-weight:400">du '+dmy(mon.getTime())+' au '+dmy(days[upto-1].getTime())+'</span></b></div>'+
-    '<div class="pweek" style="--cols:'+upto+'">'+days.slice(0,upto).map(function(d,k){
-      return '<div class="pday'+(sameDay(d,now)?' today':'')+'"><div class="pdh">'+['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][k]+' '+d.getDate()+'</div>'+
-        (per[k].map(function(e){
-          var hw=hwFrom(e);
-          return '<div class="pe'+(e.cancel?' cancel':'')+(e.s<=now&&now<e.e?' now':'')+'"><div class="pt">'+(e.allDay?'Journée':hm(e.s)+' – '+hm(e.e))+'</div><div class="ps">'+esc(e.sum)+'</div>'+
-            (e.loc?'<div class="pl">📍 '+esc(e.loc)+'</div>':'')+(e.cancel?'<div class="pl">⛔ annulé</div>':'')+
-            (hw?'<div class="pl">📚 '+esc(hw.slice(0,90))+'</div>':'')+
-            (e.desc&&!hw?'<details><summary>détails</summary><div class="pl" style="white-space:pre-wrap">'+esc(e.desc)+'</div></details>':'')+'</div>';
-        }).join('')||'<div class="pl" style="padding:6px">—</div>')+'</div>';
-    }).join('')+'</div>';
+  return banner+'<div class="prnav weeknav"><div><div class="dash-kicker">PLANNING SCOLAIRE</div><b>'+head+' <span style="color:var(--muted);font-weight:400">· du '+dmy(mon.getTime())+' au '+dmy(days[upto-1].getTime())+'</span></b></div><span style="flex:1"></span><button class="btn sm" data-pr="prev">‹</button><button class="btn sm" data-pr="today">Aujourd’hui</button><button class="btn sm" data-pr="next">›</button></div>'+
+  '<div class="pweek modern-week" style="--cols:'+upto+'">'+days.slice(0,upto).map(function(d,k){
+    var list=per[k],valid=list.filter(function(e){return !e.cancel&&!e.allDay}),duration=valid.reduce(function(n,e){return n+Math.max(0,e.e-e.s)/60000},0),items='';
+    list.forEach(function(e,j){if(j&&list[j-1].e<e.s&&!list[j-1].allDay&&!e.allDay)items+=lessonGapHtml(list[j-1],e);
+      var hw=hwFrom(e),ongoing=e.s<=now&&now<e.e;
+      items+='<article class="pe modern-pe'+(e.cancel?' cancel':'')+(ongoing?' now':'')+'"><div class="pe-top"><span class="pt">'+(e.allDay?'Toute la journée':hm(e.s)+' – '+hm(e.e))+'</span>'+(ongoing?'<span class="live-pill">EN COURS</span>':'')+'</div><div class="ps">'+esc(e.sum)+'</div>'+(e.loc?'<div class="pl">📍 '+esc(e.loc)+'</div>':'')+(e.cancel?'<div class="pl">⛔ Cours annulé</div>':'')+(hw?'<div class="pl">📚 '+esc(hw.slice(0,90))+'</div>':'')+(e.desc&&!hw?'<details><summary>Voir les détails</summary><div class="pl" style="white-space:pre-wrap">'+esc(e.desc)+'</div></details>':'')+'</article>';
+    });
+    return '<section class="pday modern-day'+(sameDay(d,now)?' today':'')+'"><header class="pdh"><span>'+['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][k]+'</span><b>'+d.getDate()+'</b></header><div class="daymeta">'+(list.length?list.length+' cours · '+Math.floor(duration/60)+' h'+(Math.round(duration%60)?' '+Math.round(duration%60)+' min':''):'Journée libre')+'</div><div class="dayevents">'+(items||'<div class="day-empty">Aucun cours prévu ✨</div>')+'</div></section>';
+  }).join('')+'</div><div class="agenda-legend"><span><i class="legend-course"></i> Cours</span><span><i class="legend-break"></i> Pause calculée entre deux cours</span><span>Les pauses sont estimées à partir des horaires des cours.</span></div>';
 }
 function hwHtml(){
   var list=allHw(),today=dayStart(new Date()).getTime(),f=PV.hw;
@@ -313,8 +328,8 @@ function paintPro(){
   var el=$('pro');
   if(!el||!document.body.classList.contains('pro')||!D)return;
   var p=PR(),sc=el.scrollTop,h=homeUrl(),
-      tabs=[['week','📅 Semaine'],['hw','📚 Devoirs'],['notes','📊 Notes'],['set','⚙ Réglages']],
-      body=PV.tab=='week'?weekHtml():PV.tab=='hw'?hwHtml():PV.tab=='notes'?notesHtml():setHtml(),
+      tabs=[['home','⌂ Accueil'],['week','📅 Agenda'],['hw','📚 Devoirs'],['notes','📊 Notes'],['set','⚙ Réglages']],
+      body=PV.tab=='home'?homeHtml():PV.tab=='week'?weekHtml():PV.tab=='hw'?hwHtml():PV.tab=='notes'?notesHtml():setHtml(),
       st=PV.msg||(p.fetched?'mis à jour '+new Date(p.fetched).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'');
   el.innerHTML='<div class="prh"><h2>🎓 Pronote</h2><span class="prs">'+esc(st)+'</span><span style="flex:1"></span>'+
     (h?'<a class="btn sm" href="'+qa(h)+'" target="_blank" rel="noopener">↗ Pronote</a>':'')+
@@ -365,3 +380,16 @@ function mergePro(b,l,r){
   o.coefs=Object.assign({},r.coefs||{},l.coefs||{});
   return o;
 }
+
+
+/* Actualisation automatique : toutes les 15 min tant que l'application est ouverte.
+   Les navigateurs suspendent les onglets en arrière-plan : on rattrape à la reprise. */
+var PR_AUTO_MS=15*60*1000;
+function prAutoRefresh(){
+  if(document.hidden||PN.busy)return;
+  var p=PR();
+  if(typeof pnLinked=='function'&&pnLinked()&&Date.now()-(p.fetched||0)>=PR_AUTO_MS)pnRefresh(true);
+}
+setInterval(prAutoRefresh,60*1000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(prAutoRefresh,1200)});
+window.addEventListener('focus',function(){setTimeout(prAutoRefresh,1200)});

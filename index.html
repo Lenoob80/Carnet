@@ -281,6 +281,23 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
  table.w th:first-child,table.w td:first-child{position:sticky;left:0;z-index:1;width:110px}
  dialog{max-height:90vh;overflow:auto}
 }
+
+/* Carnet 2.0 — dashboard et agenda modernisé */
+#pro{max-width:1500px;padding:22px clamp(12px,2vw,30px) 90px}
+.prh{padding:8px 0 14px}.prh h2{font-size:23px;letter-spacing:-.03em}.prs{font-size:12px}
+.prt{gap:4px;margin:10px 0 18px;border:0;background:var(--side);padding:5px;border-radius:12px;width:max-content;max-width:100%}
+.prt button{border:0;border-radius:9px;padding:9px 14px;font-size:13px}
+.prt button.on{background:var(--bg);color:var(--accent);box-shadow:0 1px 5px rgba(0,0,0,.12)}
+.dashhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 16px}.dashhead h2{font-size:27px;margin:3px 0;letter-spacing:-.04em}
+.dash-kicker{font-size:10px;font-weight:800;letter-spacing:.13em;color:var(--accent)}
+.dash-next{padding:20px 22px;border-radius:17px;background:linear-gradient(120deg,var(--side),var(--sel));border:1px solid var(--line);margin-bottom:14px;position:relative;overflow:hidden}
+.dash-next h3{font-size:21px;margin:5px 0}.dash-time{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}.dashstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 18px}
+.dashstat{background:var(--side);border:1px solid var(--line);border-radius:13px;padding:13px;display:grid;grid-template-columns:auto 1fr;column-gap:9px;align-items:center}.dashstat>span{grid-row:span 2;font-size:21px}.dashstat b{font-size:21px;line-height:1.2}.dashstat small{font-size:11px;color:var(--muted)}.dashstat .dashdate{font-size:12px}
+.dashcols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.dashpanel{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--bg);min-width:0}.dashpanelhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.dashpanelhead h3{font-size:15px;margin:0}.dashlesson,.dashhw{display:flex;flex-direction:column;gap:3px;padding:10px 0;border-bottom:1px solid var(--line)}.dashlesson:last-child,.dashhw:last-child{border:0}.dashlesson small,.dashhw small{color:var(--muted);font-size:11px}.dashlesson b,.dashhw b{font-size:13px}.dashlesson span,.dashhw span{font-size:12px;color:var(--muted)}.dashfoot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:14px 2px;color:var(--muted);font-size:11px}.syncdot{width:7px;height:7px;border-radius:50%;background:#35a66b;display:inline-block}
+.weeknav{align-items:center;margin:14px 0}.modern-week{align-items:stretch;gap:10px;overflow-x:auto;padding:2px 2px 12px;grid-template-columns:repeat(var(--cols),minmax(205px,1fr));scroll-snap-type:x proximity}.modern-day{padding:10px;border-radius:14px;background:var(--side);min-height:180px;scroll-snap-align:start}.modern-day.today{border:1.5px solid var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}.modern-day .pdh{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:2px 2px 6px;margin:0}.modern-day .pdh span{font-size:12px;color:var(--muted);font-weight:600}.modern-day .pdh b{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:var(--bg);font-size:14px}.daymeta{font-size:10px;color:var(--muted);padding:0 2px 9px;border-bottom:1px solid var(--line);margin-bottom:9px}.dayevents{display:flex;flex-direction:column;gap:7px}.modern-pe{margin:0;padding:10px 11px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:11px;background:var(--bg);box-shadow:0 2px 7px rgba(0,0,0,.04);font-size:12px;transition:transform .15s,box-shadow .15s}.modern-pe:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.09)}.modern-pe.now{border-left-color:#269b63;background:color-mix(in srgb,#269b63 7%,var(--bg))}.modern-pe.cancel{border-left-color:#dc5555}.pe-top{display:flex;justify-content:space-between;align-items:center;gap:5px}.modern-pe .pt{font-size:11px;font-variant-numeric:tabular-nums}.modern-pe .ps{font-size:12px;line-height:1.35;margin:5px 0;font-weight:750}.modern-pe .pl{font-size:11px}.live-pill{font-size:9px;font-weight:800;color:#218b59;background:color-mix(in srgb,#218b59 13%,var(--bg));border-radius:20px;padding:2px 6px}.pgap{display:flex;align-items:center;gap:8px;padding:8px 9px;border:1px dashed var(--line);border-radius:10px;background:color-mix(in srgb,var(--sel) 45%,var(--bg));color:var(--muted)}.pgap.lunch{border-color:#d7a44a;background:color-mix(in srgb,#d7a44a 10%,var(--bg))}.pgapicon{font-size:15px}.pgapbody{display:flex;flex:1;min-width:0;flex-direction:column;gap:1px}.pgapbody b{font-size:11px;color:var(--text)}.pgapbody small{font-size:10px}.pgap>strong{font-size:10px;white-space:nowrap}.day-empty{font-size:11px;color:var(--muted);padding:18px 5px;text-align:center}.agenda-legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:5px 2px;color:var(--muted);font-size:10px}.agenda-legend span{display:inline-flex;align-items:center;gap:5px}.legend-course,.legend-break{width:9px;height:9px;border-radius:3px;background:var(--accent)}.legend-break{background:transparent;border:1px dashed var(--muted)}
+@media(max-width:900px){.dashstats{grid-template-columns:repeat(2,minmax(0,1fr))}.modern-week{grid-template-columns:repeat(var(--cols),minmax(230px,80vw))}}
+@media(max-width:620px){#pro{padding:10px 10px 80px}.dashhead{align-items:flex-start}.dashhead h2{font-size:22px}.dashcols{grid-template-columns:1fr}.dash-next{padding:16px}.dashstats{gap:7px}.dashstat{padding:10px}.dashstat b{font-size:18px}.prt{width:100%;overflow-x:auto}.prt button{padding:8px 10px;font-size:12px}.modern-week{grid-template-columns:repeat(var(--cols),minmax(82vw,1fr))}.weeknav{flex-wrap:wrap}.weeknav>div{width:100%}}
+
 </style>
 </head>
 <body>
@@ -363,7 +380,7 @@ dialog input{width:100%;padding:6px;border:1px solid var(--line);border-radius:6
 <script src="js/pronote-connect.js"></script>
 <script src="js/menus.js"></script>
 <script src="js/couleurs.js"></script>
-<script src="js/mobile2.js"></script>
+<script src="js/mobile.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/synchro.js"></script>
 
