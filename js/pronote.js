@@ -326,6 +326,7 @@ function hwHtml(){
     (todo.some(function(h){return h.due<today})?' · <span class="hw-overdue">'+todo.filter(function(h){return h.due<today}).length+' en retard</span>':'')+'</div>'+
     (content||'<div class="hw-empty">Aucun devoir à afficher.</div>');
 }
+function c3CleanSubject(s){var a=String(s||'Matière').split(/\s*>\s*/).map(function(x){return x.trim()}).filter(Boolean);if(a.length>1&&a[a.length-1].toLocaleLowerCase('fr')===a[a.length-2].toLocaleLowerCase('fr'))a.pop();return a.length?a[a.length-1]:String(s||'Matière')}
 function notesHtml(){
   var p=PR(),subs=subjects(),gen=generalAvg(),all=allGrades();
   if(!subs.length)return '<div class="prempty"><div style="font-size:34px">📊</div><b>Aucune note pour le moment</b><p>Ajoute une note ou importe un tableau pour suivre tes résultats.</p>'+
