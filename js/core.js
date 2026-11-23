@@ -152,7 +152,7 @@ document.addEventListener('click',function(e){
  if(ac=='xls'){$('fXls').click();return}
  if(ac=='pdf'){makePdf();return}
  if(ac=='save'){saveNow();return}
- if(ac=='focus'){document.body.classList.toggle('focus');return}
+ if(ac=='focus'){var on=!document.body.classList.contains('focus');document.body.classList.toggle('focus',on);if(document.body.classList.contains('c3notebook')){document.body.classList.toggle('c3focus',on);var fb=document.getElementById('c3FocusBtn');if(fb){fb.textContent=on?'⛶ Quitter le focus':'⛶ Concentration';fb.setAttribute('aria-pressed',String(on))}}return}
  if(ac=='tb'){newText(30,nextY());return}
  if(ac.indexOf('quick-')===0){var kind=ac.slice(6),cfg={definition:['Définition','Définition à compléter…','#e7f1ff'],formula:['Formule','Écris la formule et précise les unités…','#f1eaff'],example:['Exemple','Décris un exemple concret…','#e8f5e9'],summary:['Résumé','Les idées essentielles à retenir…','#fff4df']}[kind];if(cfg){var html='<div class="callout note" style="padding:12px;border-left:4px solid var(--accent);border-radius:8px;background:'+cfg[2]+'"><b>'+cfg[0]+'</b><br>'+cfg[1]+'</div>';var bx=addBox('t',30,nextY(),440,html);var ce=bx&&bx.querySelector('.bc');if(ce){ce.focus();var r=document.createRange();r.selectNodeContents(ce);r.collapse(false);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r)}ser()}return}
  var p2=pg();if(!p2)return;ser();

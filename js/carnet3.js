@@ -32,12 +32,12 @@ function shell(){
  s.addEventListener('click',function(e){var b=e.target.closest('[data-c3]');if(b&&!b.closest('#c3nav'))go(b.dataset.c3)});
  $('c3Theme').onclick=function(){setTheme(C3.theme==='dark'?'light':C3.theme==='light'?'system':'dark')};
  $('c3Hamb').onclick=function(){document.body.classList.toggle('c3menu')};
- $('c3FocusBtn').onclick=function(){var on=document.body.classList.toggle('c3focus');this.textContent=on?'⛶ Quitter le focus':'⛶ Concentration';this.setAttribute('aria-pressed',String(on))};
+ $('c3FocusBtn').onclick=function(){var on=!document.body.classList.contains('c3focus');document.body.classList.toggle('c3focus',on);document.body.classList.toggle('focus',on);this.textContent=on?'⛶ Quitter le focus':'⛶ Concentration';this.setAttribute('aria-pressed',String(on))};
  $('vsw').style.display='none';
  var stored='system';try{stored=localStorage.getItem('carnet-theme-mode')||localStorage.getItem('carnet-theme')||'system'}catch(e){}setTheme(stored);
 }
 function markNav(id){[].forEach.call(document.querySelectorAll('.c3navbtn[data-c3]'),function(b){b.classList.toggle('active',b.dataset.c3===id)})}
-function go(id){C3.page=id;markNav(id);document.body.classList.remove('c3menu','c3custom','c3notebook');$('c3view').style.display='none';
+function go(id){C3.page=id;markNav(id);document.body.classList.remove('c3menu','c3custom','c3notebook','c3focus','focus');var focusBtn=$('c3FocusBtn');if(focusBtn){focusBtn.textContent='⛶ Concentration';focusBtn.setAttribute('aria-pressed','false')}$('c3view').style.display='none';
  /* Restaurer l'ancien carnet complet : pages, blocs, tableaux, modèles, corbeille et outils. */
  if(id==='notebook'){if(typeof setView==='function')setView('note');document.body.classList.remove('pro','c3custom');document.body.classList.add('c3notebook');$('c3view').style.display='none';return}
  if(id==='home'||id==='agenda'||id==='hw'||id==='grades'){
