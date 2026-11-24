@@ -779,6 +779,128 @@ body.c3notebook.c3focus #main,body.c3notebook.focus #main{height:calc(100dvh - 5
 @media(prefers-reduced-motion:no-preference){body.c3notebook #pgs>.pg,body.c3notebook #secs>.sec{transition:background .14s,border-color .14s}}
 </style>
 
+
+<style id="carnet-336-layout-hotfix">
+/* 3.3.6 — correctif ciblé : panneau interne stable, sélecteur compact, toile fluide */
+body.c3notebook #app{
+  display:grid!important;grid-template-columns:300px minmax(0,1fr)!important;
+  grid-template-rows:minmax(0,1fr)!important;align-items:stretch!important;
+  width:100%!important;height:calc(100dvh - 116px)!important;min-height:420px!important;
+  margin:0!important;overflow:hidden!important;gap:0!important
+}
+body.c3notebook #side{
+  display:flex!important;grid-column:1!important;grid-row:1!important;
+  flex:0 0 300px!important;flex-direction:column!important;align-items:stretch!important;
+  width:300px!important;min-width:0!important;max-width:300px!important;
+  height:100%!important;max-height:100%!important;min-height:0!important;
+  position:relative!important;inset:auto!important;overflow:hidden!important;
+  background:var(--side)!important;border-right:1px solid var(--line)!important;
+  transform:none!important;box-shadow:none!important
+}
+body.c3notebook #secs{
+  display:flex!important;flex:0 1 42%!important;flex-direction:column!important;align-items:stretch!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;
+  min-height:0!important;max-height:42%!important;overflow-x:hidden!important;overflow-y:auto!important;
+  padding:12px 10px!important;gap:6px!important;white-space:normal!important;
+  border:0!important;border-bottom:1px solid var(--line)!important;background:transparent!important
+}
+body.c3notebook #secs #nsel{
+  display:block!important;flex:0 0 42px!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;height:42px!important;min-height:42px!important;max-height:42px!important;
+  padding:7px 10px!important;margin:0!important;line-height:1.2!important;font-size:14px!important;
+  border:1px solid var(--line)!important;border-radius:9px!important;box-sizing:border-box!important
+}
+body.c3notebook #secs>.top{display:flex!important;flex:0 0 auto!important;flex-wrap:wrap!important;gap:5px!important;margin:0!important}
+body.c3notebook #secs>.sec{display:flex!important;flex:0 0 auto!important;width:100%!important;max-width:100%!important;
+ min-height:38px!important;height:auto!important;white-space:normal!important;overflow-wrap:anywhere!important}
+body.c3notebook #pgs{
+  display:block!important;flex:1 1 0!important;min-height:0!important;width:100%!important;max-width:100%!important;
+  height:auto!important;max-height:none!important;overflow-x:hidden!important;overflow-y:auto!important;
+  padding:10px 9px 84px!important;margin:0!important;border:0!important;background:transparent!important
+}
+body.c3notebook #pgs>.top{display:flex!important;flex-wrap:wrap!important;gap:6px!important;margin:0 0 9px!important}
+body.c3notebook #pgs>.pg{display:flex!important;width:100%!important;max-width:100%!important;min-width:0!important;
+ margin:3px 0!important;white-space:normal!important;overflow-wrap:anywhere!important}
+body.c3notebook #stt{position:relative!important;inset:auto!important;display:flex!important;flex:0 0 auto!important;
+ flex-wrap:wrap!important;width:100%!important;max-width:100%!important;margin:0!important;padding:8px!important;
+ border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;background:var(--side)!important}
+body.c3notebook #main{
+  display:block!important;grid-column:2!important;grid-row:1!important;position:relative!important;
+  width:100%!important;min-width:0!important;max-width:none!important;height:100%!important;max-height:100%!important;
+  min-height:0!important;margin:0!important;padding:0 0 24px!important;overflow:auto!important;
+  overscroll-behavior:contain!important;scrollbar-gutter:stable!important;background:var(--bg)!important
+}
+body.c3notebook #fb{position:sticky!important;top:0!important;z-index:45!important;width:max-content!important;
+ min-width:100%!important;max-width:none!important;margin:0 0 12px!important;overflow:visible!important}
+body.c3notebook #fb .tabs,body.c3notebook #fb .tp{max-width:calc(100vw - 320px)!important;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important}
+body.c3notebook #page{position:relative!important;display:block!important;width:max(100%,3200px)!important;min-width:3200px!important;
+ max-width:none!important;min-height:2200px!important;height:auto!important;margin:0!important;padding:22px 28px 120px!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;overflow:visible!important}
+body.c3notebook #page .box{position:absolute!important;display:block!important;min-width:80px!important;max-width:none!important;
+ margin:0!important;transform:none!important;box-sizing:border-box!important}
+body.c3notebook #page .box .bc{min-width:0!important;max-width:none!important;overflow-wrap:break-word!important}
+body.c3notebook.c3focus #app,body.c3notebook.focus #app{height:calc(100dvh - 58px)!important}
+body.c3notebook.c3focus #side,body.c3notebook.focus #side{height:100%!important;max-height:100%!important}
+body.c3notebook.c3focus #main,body.c3notebook.focus #main{height:100%!important;max-height:100%!important}
+@media(max-width:760px){
+ body.c3notebook #app,body.c3notebook.c3focus #app,body.c3notebook.focus #app{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:56px 60px minmax(0,1fr)!important;
+  width:100%!important;height:calc(100dvh - 108px)!important;min-height:0!important;overflow:hidden!important
+ }
+ body.c3notebook #side,body.c3notebook.c3focus #side,body.c3notebook.focus #side{display:contents!important}
+ body.c3notebook #secs,body.c3notebook.c3focus #secs,body.c3notebook.focus #secs{
+  display:flex!important;grid-column:1!important;grid-row:1!important;flex-direction:row!important;
+  align-items:center!important;align-self:stretch!important;flex-wrap:nowrap!important;gap:6px!important;
+  width:100%!important;height:56px!important;min-height:56px!important;max-height:56px!important;
+  padding:6px 8px!important;overflow-x:auto!important;overflow-y:hidden!important;
+  border:0!important;border-bottom:1px solid var(--line)!important;white-space:nowrap!important
+ }
+ body.c3notebook #secs #nsel{flex:0 0 145px!important;width:145px!important;min-width:145px!important;max-width:145px!important;
+  height:40px!important;min-height:40px!important;max-height:40px!important;padding:6px 8px!important;font-size:13px!important}
+ body.c3notebook #secs>.top{display:flex!important;flex:0 0 auto!important;flex-wrap:nowrap!important;gap:4px!important;margin:0!important}
+ body.c3notebook #secs>.top .btn{flex:0 0 auto!important;white-space:nowrap!important;font-size:11px!important;padding:6px 7px!important}
+ body.c3notebook #secs>.sec{display:flex!important;flex:0 0 auto!important;width:auto!important;max-width:175px!important;
+  min-height:36px!important;height:36px!important;padding:5px 8px!important;white-space:nowrap!important;overflow:hidden!important}
+ body.c3notebook #secs>.sec span{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.c3notebook #secs>.link{flex:0 0 auto!important;white-space:nowrap!important;padding:6px 8px!important}
+ body.c3notebook #pgs,body.c3notebook.c3focus #pgs,body.c3notebook.focus #pgs{
+  display:flex!important;grid-column:1!important;grid-row:2!important;flex-direction:row!important;align-items:center!important;
+  flex-wrap:nowrap!important;gap:5px!important;width:100%!important;height:60px!important;min-height:60px!important;max-height:60px!important;
+  padding:6px 8px!important;overflow-x:auto!important;overflow-y:hidden!important;border:0!important;
+  border-bottom:1px solid var(--line)!important;background:var(--side)!important
+ }
+ body.c3notebook #pgs>.top{display:flex!important;flex:0 0 auto!important;flex-wrap:nowrap!important;gap:5px!important;margin:0!important}
+ body.c3notebook #pgs>.top .btn{white-space:nowrap!important;font-size:12px!important;padding:7px 9px!important}
+ body.c3notebook #pgs>.pg{display:flex!important;flex:0 0 auto!important;width:auto!important;max-width:190px!important;
+  min-width:100px!important;height:38px!important;min-height:38px!important;margin:0!important;padding:6px 8px!important;white-space:nowrap!important}
+ body.c3notebook #pgs>.pg span{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.c3notebook #pgs>.c3moretools{flex:0 0 auto!important;white-space:nowrap!important}
+ body.c3notebook #stt{display:none!important}
+ body.c3notebook #main,body.c3notebook.c3focus #main,body.c3notebook.focus #main{
+  display:block!important;grid-column:1!important;grid-row:3!important;width:100%!important;height:auto!important;
+  max-height:none!important;min-height:0!important;overflow:auto!important;padding:0 0 70px!important
+ }
+ body.c3notebook #fb{position:sticky!important;top:0!important;width:100%!important;min-width:0!important;max-width:100%!important;
+  padding:6px 7px!important;margin:0 0 8px!important;overflow:hidden!important}
+ body.c3notebook #fb .tabs,body.c3notebook #fb .tp{width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important}
+ body.c3notebook #page,body.c3notebook #page.flow-layout{width:100%!important;min-width:0!important;max-width:100%!important;
+  min-height:65vh!important;height:auto!important;margin:0!important;padding:12px 12px 90px!important;overflow:visible!important}
+ body.c3notebook #page #title,body.c3notebook #page #sub{width:100%!important;max-width:100%!important;min-width:0!important;overflow-wrap:anywhere!important}
+ body.c3notebook #page .box,body.c3notebook #page.flow-layout>.box{position:relative!important;left:auto!important;top:auto!important;
+  right:auto!important;bottom:auto!important;display:block!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;height:auto!important;margin:12px 0!important;transform:none!important}
+ body.c3notebook #page .box .bc{width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-wrap:anywhere!important}
+ body.c3notebook #page .box img,body.c3notebook #page .box video{max-width:100%!important;height:auto!important}
+ body.c3notebook #sbar{top:0!important;z-index:150!important;min-height:50px!important;padding:6px 8px!important;display:flex!important;gap:5px!important;align-items:center!important;overflow-x:auto!important}
+ body.c3notebook #q{min-width:70px!important;max-width:none!important;flex:1 1 90px!important}
+ body.c3notebook #autoSaveState{display:none!important}
+ body.c3notebook #sbar .btn{flex:0 0 auto!important;padding:6px 8px!important}
+ body.c3notebook.c3focus #side,body.c3notebook.focus #side{display:contents!important}
+}
+@media(max-width:390px){body.c3notebook #secs #nsel{flex-basis:128px!important;width:128px!important;min-width:128px!important;max-width:128px!important}body.c3notebook #secs>.sec{max-width:145px!important}}
+</style>
+
 </head>
 <body>
 <div id="sa"></div>
