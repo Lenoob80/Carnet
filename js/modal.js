@@ -10,6 +10,6 @@ function openModal(title,html,handler){
   $('mdT').textContent=title;$('mdB').innerHTML=html;MDH=handler||null;
   if(!MD.open)MD.showModal();
 }
-function closeModal(){if(MD.open)MD.close()}
+function closeModal(){if(MD.open)MD.close();MD.classList.remove('help-modal')}
 $('mdX').onclick=closeModal;
 $('mdB').addEventListener('click',function(e){if(MDH)MDH(e)});

@@ -117,23 +117,54 @@ var HELP=[
     '<li><b>Page blanche ou ancienne version</b> : recharge la page ; sur iPhone, ferme l’app et rouvre-la avec du réseau.</li></ul>'}
 ];
 function openHelp(open){
-  openModal('❓ Aide',
-    '<div class="row" style="margin-bottom:8px"><button class="btn sm" data-h="tour">▶ Visite guidée</button><button class="btn sm" data-h="palette">⌘ Chercher une action</button></div>'+
-    '<input id="hq" placeholder="Chercher dans l’aide…" autocomplete="off" style="margin-bottom:8px"><div id="hl">'+
-    HELP.map(function(s){return '<details class="hsec"'+(s.id==open||(!open&&s.id=='start')?' open':'')+'><summary>'+s.t+'</summary>'+s.h+'</details>'}).join('')+'</div>',
+  var cats=[
+    {id:'start',label:'Bien démarrer',icon:'🚀'},
+    {id:'pages',label:'Carnets & pages',icon:'📚'},
+    {id:'write',label:'Écriture',icon:'✍️'},
+    {id:'tables',label:'Tableaux',icon:'▦'},
+    {id:'objects',label:'Images & objets',icon:'🖼️'},
+    {id:'organize',label:'Organisation',icon:'🗂️'},
+    {id:'sync',label:'Synchronisation',icon:'☁️'},
+    {id:'iphone',label:'Mobile',icon:'📱'},
+    {id:'pronote',label:'Pronote',icon:'🎓'},
+    {id:'keys',label:'Raccourcis',icon:'⌨️'},
+    {id:'faq',label:'Dépannage',icon:'🛟'}
+  ];
+  var sections=HELP.map(function(s){
+    var c=cats.filter(function(x){return x.id===s.id})[0]||{label:s.t,icon:'•'};
+    return '<details class="hsec help-section" data-help-id="'+s.id+'"'+(s.id===(open||'start')?' open':'')+'><summary><span class="help-section-icon">'+c.icon+'</span><span>'+esc(s.t.replace(/^\S+\s*/,''))+'</span><span class="help-chevron">⌄</span></summary><div class="help-section-body">'+s.h+'</div></details>';
+  }).join('');
+  var chips=cats.map(function(c){return '<button type="button" class="help-chip" data-hcat="'+c.id+'">'+c.icon+' '+c.label+'</button>'}).join('');
+  openModal('Centre d’aide',
+    '<div class="help-shell">'+
+      '<div class="help-hero"><div class="help-kicker">CARNET · CENTRE D’AIDE</div><div class="help-title">Comment peut-on t’aider ?</div><p>Retrouve rapidement les explications pour écrire, organiser tes pages et utiliser les outils de Carnet.</p>'+
+        '<div class="help-search-wrap"><span>⌕</span><input id="hq" type="search" placeholder="Rechercher une fonction, un outil, un problème…" autocomplete="off"></div>'+
+        '<div class="help-quick"><button class="help-primary" data-h="tour">▶ Lancer la visite guidée</button><button class="help-secondary" data-h="palette">⌘ Rechercher une action</button></div></div>'+
+      '<div class="help-label">ACCÈS RAPIDE</div><div class="help-chips">'+chips+'</div>'+
+      '<div class="help-list-head"><div><b>Guides et fonctionnalités</b><small>Choisis un sujet pour afficher les explications.</small></div><div class="help-expand"><button data-h="expand">Tout ouvrir</button><button data-h="collapse">Tout fermer</button></div></div>'+
+      '<div id="hl" class="help-sections">'+sections+'</div>'+
+      '<div class="help-footer-note">Astuce : appuie sur <kbd>F1</kbd> à tout moment pour revenir à cette aide.</div>'+
+    '</div>',
     function(ev){
-      var b=ev.target.closest('[data-h]');if(!b)return;
-      closeModal();
-      if(b.dataset.h=='tour')startTour();else openPalette();
+      var b=ev.target.closest('[data-h],[data-hcat]');if(!b)return;
+      if(b.dataset.h){
+        if(b.dataset.h==='expand'){document.querySelectorAll('#hl .help-section').forEach(function(d){d.open=true});return}
+        if(b.dataset.h==='collapse'){document.querySelectorAll('#hl .help-section').forEach(function(d){d.open=false});return}
+        closeModal();if(b.dataset.h==='tour')startTour();else openPalette();return;
+      }
+      var id=b.dataset.hcat,el=document.querySelector('#hl [data-help-id="'+id+'"]');
+      if(el){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}
     });
+  MD.classList.add('help-modal');
   $('hq').oninput=function(){
     var q=nz(this.value);
-    [].forEach.call(document.querySelectorAll('#hl details'),function(d){
+    document.querySelectorAll('#hl .help-section').forEach(function(d){
       var hit=!q||nz(d.textContent).indexOf(q)>=0;
       d.style.display=hit?'':'none';
       if(q&&hit)d.open=true;
     });
   };
+  $('hq').onkeydown=function(e){if(e.key==='Escape'){this.value='';this.dispatchEvent(new Event('input'));}};
 }
 
 /* ============ palette d'actions (Ctrl+/) ============ */
