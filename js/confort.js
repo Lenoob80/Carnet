@@ -78,6 +78,7 @@ function moveBoxKey(e){
   fit();clearTimeout(tm);tm=setTimeout(ser,300);
 }
 document.addEventListener('keydown',function(e){
+  if(!e||typeof e.key!=='string')return;
   var k=e.key.toLowerCase(),inField=e.target.closest&&e.target.closest('input,textarea,select,dialog,#sbar');
   if((e.ctrlKey||e.metaKey)&&!e.altKey){
     if(k=='s'){e.preventDefault();saveNow();return}

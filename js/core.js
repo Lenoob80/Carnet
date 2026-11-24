@@ -117,6 +117,8 @@ document.addEventListener('focusout',function(e){var b=e.target.closest&&e.targe
 document.addEventListener('paste',function(e){if(!e.target.closest||!e.target.closest('#page'))return;var fs=[].filter.call(e.clipboardData.files||[],function(f){return /^image\//.test(f.type)});if(fs.length){e.preventDefault();fs.forEach(putImg)}});
 $('secs').addEventListener('change',function(e){if(e.target.id=='nsel'){ser();D.cur={n:+e.target.value,s:0,p:0};save();render()}});
 document.addEventListener('click',function(e){
+ /* L'écran de connexion est affiché avant le déverrouillage : ne jamais lire D à ce stade. */
+ if(!D||!D.cur||!Array.isArray(D.nbs)||!D.nbs.length)return;
  var t=e.target,d=t.dataset||{},n=nb();
  var bq=t.closest&&t.closest('[data-q]');if(bq){quick(bq.dataset.q);return}
  var bt=t.closest&&t.closest('[data-f],[data-t]');if(bt){var df=bt.dataset.f;if(df=='undo')undo(-1);else if(df=='redo')undo(1);else if(df=='cb')insCb();else if(df)fmtT(df);else tbOp(bt.dataset.t);return}

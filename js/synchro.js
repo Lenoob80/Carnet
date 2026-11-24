@@ -145,6 +145,7 @@ window.addEventListener('online',function(){syncNow()});
 /* ---- annuler / rétablir (15 derniers états de la page) ---- */
 function undo(d){ser();var p=pg();if(!p)return;var h=HI[p.id];if(!h)return;var j=h.i+d;if(j<0||j>=h.s.length){toast(d<0?'Rien à annuler.':'Rien à rétablir.');return}h.i=j;var o=JSON.parse(h.s[j]);p.title=o[0];p.sub=o[1];p.tab=o[2];p.boxes=o[3];p.u=Date.now();save();render()}
 document.addEventListener('keydown',function(e){
+  if(!e||typeof e.key!=='string')return;
  if(!(e.ctrlKey||e.metaKey)||e.altKey)return;var k=e.key.toLowerCase();
  if(k=='k'){e.preventDefault();$('q').focus();$('q').select();return}
  if(k!='z'&&k!='y')return;

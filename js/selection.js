@@ -134,6 +134,7 @@ document.addEventListener('pointerdown',function(e){
 
 /* ---- clavier : Ctrl+A, Suppr, Ctrl+D, Échap ---- */
 document.addEventListener('keydown',function(e){
+  if(!e||typeof e.key!=='string')return;
   var a=document.activeElement,k=e.key.toLowerCase(),ctrl=e.ctrlKey||e.metaKey;
   if(a&&a.closest&&a.closest('input,textarea,select,dialog,#sbar'))return;
   var typing=a&&a.closest&&a.closest('[contenteditable]:not([contenteditable="false"])');

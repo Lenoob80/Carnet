@@ -7,6 +7,7 @@ function goRel(d){
   ser();D.cur.p=i;save();render();window.scrollTo(0,0);
 }
 document.addEventListener('keydown',function(e){
+  if(!e||typeof e.key!=='string')return;
   var a=document.activeElement,ctrl=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();
   if(ctrl&&k=='p'&&!e.shiftKey&&!e.altKey&&$('page')){e.preventDefault();makePdf();return}
   if(!$('page')||(a&&a.closest&&a.closest('input,textarea,select,dialog,#sbar')))return;

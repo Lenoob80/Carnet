@@ -1,0 +1,6 @@
+Carnet 3.3.3 — correctif connexion / écran verrouillé
+
+Cause diagnostiquée : des gestionnaires globaux (clics, clavier et actualisation Pronote) lisaient D avant que le déverrouillage ait chargé les données.
+Correctifs : garde du gestionnaire de clics du carnet, PR() sûr avant déverrouillage, arrêt du rafraîchissement Pronote tant que D n'est pas initialisé, garde des événements clavier sans e.key, cache service worker renouvelé.
+
+Ne pas effacer le stockage local. Conserver le Worker Cloudflare et le dépôt privé.

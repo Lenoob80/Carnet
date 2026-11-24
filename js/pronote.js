@@ -4,7 +4,7 @@
    Pronote ne donne PAS ici : notes, absences, messagerie, vie scolaire (voir « Réglages »). */
 
 var PV={tab:'home',off:0,hw:'todo',busy:false,msg:''};
-function PR(){return D.pro||(D.pro={})}
+function PR(){if(!D||typeof D!=='object')return {};return D.pro||(D.pro={})}
 function touchPR(){PR().u=Date.now();save()}
 
 /* ---------- dates ---------- */
@@ -439,6 +439,7 @@ function mergePro(b,l,r){
    Les navigateurs suspendent les onglets en arrière-plan : on rattrape à la reprise. */
 var PR_AUTO_MS=15*60*1000;
 function prAutoRefresh(){
+  if(!D||!D.cur||!Array.isArray(D.nbs))return;
   if(document.hidden||PN.busy)return;
   var p=PR();
   if(typeof pnLinked=='function'&&pnLinked()&&Date.now()-(p.fetched||0)>=PR_AUTO_MS)pnRefresh(true);
