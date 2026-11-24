@@ -105,7 +105,7 @@ var FB='<div id="fb"><div class="tabs">'+
       fbtn('data-a="ro"','🔒 Lecture','Lecture seule : le clavier ne s’ouvre plus')),
     fgrp('Document',
       fbtn('data-a="pdf"','⬇ PDF','Télécharger la page en PDF (Ctrl+P)')+fbtn('data-a="export"','📄 Word / Markdown','Exporter une page, une section ou un carnet')+
-      fbtn('data-a="save"','💾 Enregistrer','Enregistrer et synchroniser (Ctrl+S)')),
+      fbtn('data-a="save"','💾 Enregistrer','Enregistrer et synchroniser (Ctrl+S)')+fbtn('data-a="repair-encoding"','Aa Corriger les accents','Réparer les caractères mal encodés dans les textes de cette page')),
     fgrp('Carnet',
       fbtn('data-a="tpl"','📋 Modèles','Enregistrer une page type, créer une page depuis un modèle')+
       fbtn('data-a="todo"','☑ À faire','Toutes les cases non cochées de tous les carnets')+

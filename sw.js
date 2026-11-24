@@ -2,7 +2,7 @@
    - fichiers du site : réseau d'abord (toujours à jour), copie locale si pas de réseau
    - bibliothèques cdnjs : copie locale d'abord (versions fixes)
    - api.github.com et tout le reste : jamais intercepté, jamais mis en cache */
-var VERSION='carnet-20261124-onenote-workspace33';
+var VERSION='carnet-20261124-workspacefix331';
 var SHELL=[
  "./",
  "index.html",
@@ -45,6 +45,7 @@ var SHELL=[
  "js/pwa.js",
  "js/synchro.js",
  "js/carnet3.js",
+ "js/workspacefix.js",
  "js/vendor/pawnote.bundle.js"
 ];
 var CDN=[
