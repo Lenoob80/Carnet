@@ -118,9 +118,9 @@ function gate(){var has=!!localStorage.getItem('carnet-cfg'),c=false;try{c=has&&
 $('lkCh').onclick=function(){setLk(true,true)};
 $('lkGo').onclick=async function(){
  var e=$('lkE').value.trim().toLowerCase(),p=$('lkP').value;if(!e||!p){lerr('Renseigne l’e-mail et le mot de passe.');return}
- $('lkGo').disabled=true;$('lkErr').textContent='Vérification…';
+ $('lkGo').disabled=true;$('lkErr').textContent='Vérification et déchiffrement sécurisé…';
  try{
-  K=await derive(e,p);var raw=localStorage.getItem('carnet-cfg'),fresh=false;CFG=null;
+  K=await derive(e,p);$('lkErr').textContent='Clé prête. Récupération de tes carnets…';var raw=localStorage.getItem('carnet-cfg'),fresh=false;CFG=null;
   if(raw){try{CFG=await unseal(raw)}catch(x){K=null;return lerr('E-mail ou mot de passe incorrect.')}}
   if(!raw||chg){var rp=$('lkR').value.trim()||(CFG&&CFG.r)||'',tk=$('lkT').value.trim(),pa=(CFG&&CFG.p)||'carnet.enc';
    if(!/^[\w.-]+\/[\w.-]+$/.test(rp)||!tk){K=null;CFG=null;return lerr('Renseigne le jeton'+(raw?'.':' et le dépôt (pseudo/nom).'))}
@@ -128,8 +128,10 @@ $('lkGo').onclick=async function(){
    if(rr.status==401){K=null;CFG=null;return lerr('Jeton refusé (401).')}
    if(!rr.ok){K=null;CFG=null;return lerr('Dépôt introuvable ou jeton sans accès ('+rr.status+').')}
    fresh=true}
+  $('lkErr').textContent='Ouverture et restauration de tes pages…';
   await boot();
   if(fresh)localStorage.setItem('carnet-cfg',await seal(CFG));
+  $('lkErr').textContent='Connexion réussie.';
   $('lock').style.display='none';$('lkP').value='';$('lkT').value=''
  }catch(x){K=null;lerr('Erreur : '+x.message)}
 };

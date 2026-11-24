@@ -39,7 +39,7 @@ function shell(){
 function markNav(id){[].forEach.call(document.querySelectorAll('.c3navbtn[data-c3]'),function(b){b.classList.toggle('active',b.dataset.c3===id)})}
 function go(id){C3.page=id;markNav(id);document.body.classList.remove('c3menu','c3custom','c3notebook','c3focus','focus');var focusBtn=$('c3FocusBtn');if(focusBtn){focusBtn.textContent='⛶ Concentration';focusBtn.setAttribute('aria-pressed','false')}$('c3view').style.display='none';
  /* Restaurer l'ancien carnet complet : pages, blocs, tableaux, modèles, corbeille et outils. */
- if(id==='notebook'){if(typeof setView==='function')setView('note');document.body.classList.remove('pro','c3custom');document.body.classList.add('c3notebook');$('c3view').style.display='none';return}
+ if(id==='notebook'){try{if(typeof ser==='function')ser()}catch(e){}if(typeof setView==='function')setView('note');document.body.classList.remove('pro','c3custom');document.body.classList.add('c3notebook');$('c3view').style.display='none';/* Le passage depuis Pronote change les dimensions de l’éditeur : rerendre après application du layout, sans toucher aux données. */if(window.D&&Array.isArray(D.nbs)&&typeof render==='function'){requestAnimationFrame(function(){requestAnimationFrame(function(){try{render()}catch(e){console.error('Carnet: rendu des pages impossible',e)}if(typeof window.CarnetWorkspaceRefresh==='function')window.CarnetWorkspaceRefresh();else if(typeof fit==='function')fit()})})}return}
  if(id==='home'||id==='agenda'||id==='hw'||id==='grades'){
   document.body.classList.remove('c3custom');if(typeof setView==='function'){setView('pro');var pronoteTab={home:'home',agenda:'week',hw:'hw',grades:'notes'};PV.tab=pronoteTab[id]||'home';paintPro()}
  }else{

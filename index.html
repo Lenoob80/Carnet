@@ -545,6 +545,82 @@ body.focus #fb,body.c3focus #fb{top:64px!important}
 }
 </style>
 
+
+<style id="carnet-334-layout-recovery">
+/* Correctif structurel : le panneau #side est aplati dans la grille.
+   Les règles flex héritées de 3.0 ne doivent plus écraser la grille du carnet. */
+body.c3notebook #app,
+body.c3notebook.focus #app,
+body.c3notebook.c3focus #app{
+  display:grid!important;
+  grid-template-columns:minmax(225px,270px) minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  align-items:start!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  min-height:calc(100vh - 116px)!important;margin:0!important;
+  overflow:visible!important;gap:0!important;
+}
+body.c3notebook #side,
+body.c3notebook.focus #side,
+body.c3notebook.c3focus #side{display:contents!important}
+body.c3notebook #secs,
+body.c3notebook.focus #secs,
+body.c3notebook.c3focus #secs{
+  grid-column:1/-1!important;grid-row:1!important;
+  display:flex!important;align-items:center!important;align-self:start!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  min-height:56px!important;height:auto!important;max-height:74px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;
+  padding:8px 12px!important;margin:0!important;box-sizing:border-box!important;
+  background:var(--side)!important;border-bottom:1px solid var(--line)!important;
+}
+body.c3notebook #pgs,
+body.c3notebook.focus #pgs,
+body.c3notebook.c3focus #pgs{
+  grid-column:1!important;grid-row:2!important;
+  display:block!important;align-self:stretch!important;
+  width:auto!important;min-width:0!important;max-width:none!important;
+  height:auto!important;max-height:calc(100vh - 190px)!important;min-height:300px!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  padding:12px 9px 90px!important;margin:0!important;
+  border:0!important;border-right:1px solid var(--line)!important;
+  background:var(--side)!important;box-sizing:border-box!important;
+}
+body.c3notebook #main,
+body.c3notebook.focus #main,
+body.c3notebook.c3focus #main{
+  grid-column:2!important;grid-row:2!important;
+  display:block!important;align-self:stretch!important;
+  width:100%!important;min-width:0!important;max-width:none!important;
+  margin:0!important;padding:12px clamp(14px,2vw,30px) 100px!important;
+  overflow:visible!important;box-sizing:border-box!important;
+}
+body.c3notebook #stt{position:fixed!important;left:10px!important;bottom:10px!important;z-index:90!important;max-width:calc(100vw - 20px)!important}
+body.c3notebook #page{width:100%!important;max-width:100%!important;min-width:0!important;margin:8px 0 70px!important;padding:14px 4px 90px!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+body.c3notebook #page .box{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}
+body.c3notebook #page .bc{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;word-break:normal!important}
+body.c3notebook #page .bc img,body.c3notebook #page .bc video,body.c3notebook #page .bc iframe{max-width:100%!important;height:auto!important}
+body.c3notebook #fb{position:sticky!important;top:calc(116px + env(safe-area-inset-top,0px))!important;z-index:40!important;width:100%!important;max-width:100%!important;margin:0 0 12px!important}
+body.c3notebook.focus #fb,body.c3notebook.c3focus #fb{top:calc(58px + env(safe-area-inset-top,0px))!important}
+/* Le flux empile les blocs seulement lorsque leur position dépasse la page. Les données x/y restent inchangées. */
+body.c3notebook #page.flow-layout{display:block!important;min-height:500px!important;overflow:visible!important}
+body.c3notebook #page.flow-layout>.box{position:relative!important;display:block!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;margin:12px 0!important;transform:none!important}
+body.c3notebook #page.flow-layout>.box[data-k="i"]{width:min(100%,680px)!important}
+body.c3notebook #page.flow-layout>.box .bh,body.c3notebook #page.flow-layout>.box .br{display:none!important}
+body.c3notebook #page.flow-layout>.box .bc{width:100%!important;max-height:none!important;overflow:visible!important;white-space:normal!important}
+@media(max-width:760px){
+ body.c3notebook #app,body.c3notebook.focus #app,body.c3notebook.c3focus #app{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto minmax(0,1fr)!important;min-height:calc(100dvh - 58px)!important}
+ body.c3notebook #secs,body.c3notebook.focus #secs,body.c3notebook.c3focus #secs{grid-column:1!important;grid-row:1!important;min-height:48px!important;max-height:58px!important;padding:6px 8px!important}
+ body.c3notebook #pgs,body.c3notebook.focus #pgs,body.c3notebook.c3focus #pgs{grid-column:1!important;grid-row:2!important;display:flex!important;align-items:center!important;gap:5px!important;flex-wrap:nowrap!important;width:100%!important;min-height:56px!important;height:auto!important;max-height:130px!important;overflow-x:auto!important;overflow-y:hidden!important;border-right:0!important;border-bottom:1px solid var(--line)!important;padding:7px 8px!important}
+ body.c3notebook #pgs>.pg{flex:0 0 auto!important;max-width:230px!important;white-space:nowrap!important;margin:0!important}
+ body.c3notebook #pgs>.top,body.c3notebook #pgs>.c3moretools,body.c3notebook #pgs>.c3favempty{flex:0 0 auto!important;margin:0!important}
+ body.c3notebook #main,body.c3notebook.focus #main,body.c3notebook.c3focus #main{grid-column:1!important;grid-row:3!important;padding:10px 10px 90px!important}
+ body.c3notebook #page{min-height:55vh!important;padding:10px 2px 80px!important}
+ body.c3notebook #fb{top:calc(104px + env(safe-area-inset-top,0px))!important;max-height:42vh!important;overflow:auto!important}
+ body.c3notebook.focus #fb,body.c3notebook.c3focus #fb{top:54px!important}
+}
+</style>
+
 </head>
 <body>
 <div id="sa"></div>
@@ -664,7 +740,6 @@ body.focus #fb,body.c3focus #fb{top:64px!important}
 <script src="js/pronote-connect.js"></script>
 <script src="js/menus.js"></script>
 <script src="js/couleurs.js"></script>
-<script src="js/mobile.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/synchro.js"></script>
 
