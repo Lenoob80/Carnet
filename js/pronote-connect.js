@@ -199,14 +199,30 @@ async function pnFetchAll(ctx,log){
     log.push('✓ Notes : '+out.grades.length+' · moyennes par matière : '+out.avgs.length);
   }catch(e){log.push('✗ Notes : '+(e.message||e))}
 
-  /* Compétences évaluées : Pawnote expose les évaluations et leurs compétences. */
-  if(typeof PW.evaluations==='function'&&periods.length){
+  /* Compétences : les périodes sont propres à l'onglet Evaluations.
+     Dans Pawnote 1.6.4, elles se trouvent dans userResource.tabs (Map),
+     et non dans userResource.periods. On garde les périodes générales en secours. */
+  var evalPeriods=[];
+  try{
+    var tabs=ures.tabs,evalTab=null,evalTabId=PW.TabLocation&&PW.TabLocation.Evaluations;
+    if(tabs&&typeof tabs.get==='function'&&evalTabId!=null)evalTab=tabs.get(evalTabId);
+    else if(tabs&&evalTabId!=null)evalTab=tabs[evalTabId]||tabs[String(evalTabId)];
+    if(evalTab){
+      if(Array.isArray(evalTab.periods))evalPeriods=evalTab.periods.slice();
+      if(!evalPeriods.length&&evalTab.defaultPeriod)evalPeriods=[evalTab.defaultPeriod];
+    }
+    if(!evalPeriods.length)evalPeriods=periods.slice();
+    if(tabs&&typeof tabs.keys==='function')log.push('Onglets Pronote disponibles : '+Array.from(tabs.keys()).join(', '));
+    log.push('Périodes de compétences : '+evalPeriods.map(function(x){return x.name||x.id||'?'}).join(' ; '));
+  }catch(tabError){log.push('  lecture des périodes de compétences : '+(tabError.message||tabError));if(!evalPeriods.length)evalPeriods=periods.slice()}
+  if(typeof PW.evaluations==='function'&&evalPeriods.length){
     out.evaluations=[];
-    for(var ep=0;ep<periods.length;ep++){
+    for(var ep=0;ep<evalPeriods.length;ep++){
       try{
-        var evals=await PW.evaluations(session,periods[ep]);
-        (evals||[]).forEach(function(ev,ei){
-          var date=pnMs(ev.date),skills=(ev.skills||[]).map(function(sk,si){return {
+        var evals=await PW.evaluations(session,evalPeriods[ep]);
+        if(!Array.isArray(evals))throw new Error('format de réponse inattendu ('+typeof evals+')');
+        evals.forEach(function(ev,ei){
+          var date=pnMs(ev.date),rawSkills=Array.isArray(ev.skills)?ev.skills:[],skills=rawSkills.map(function(sk,si){return {
             id:String(sk.id||('skill-'+si)),order:Number(sk.order)||0,level:String(sk.level||''),
             abbreviation:String(sk.abbreviation||''),coefficient:Number(sk.coefficient)||1,
             domainID:String(sk.domainID||''),domainName:String(sk.domainName||''),
@@ -217,12 +233,13 @@ async function pnFetchAll(ctx,log){
           out.evaluations.push({id:'pn-eval-'+String(ev.id||ep+'-'+ei),source:'pronote',name:String(ev.name||'Évaluation'),
             subject:pnName(ev.subject)||'Sans matière',teacher:String(ev.teacher||''),coefficient:Number(ev.coefficient)||1,
             description:String(ev.description||''),levels:Array.isArray(ev.levels)?ev.levels.map(String):[],
-            date:date?isoDay(date):'',skills:skills,period:String(periods[ep].name||'')});
+            date:date?isoDay(date):'',skills:skills,period:String(evalPeriods[ep].name||'')});
         });
+        log.push('  période '+(ep+1)+' ('+(evalPeriods[ep].name||'sans nom')+') : '+evals.length+' évaluation(s)');
       }catch(e){log.push('  compétences période '+(ep+1)+' : '+(e.message||e))}
     }
     log.push('✓ Évaluations de compétences : '+out.evaluations.length+' · compétences détaillées : '+out.evaluations.reduce(function(n,e){return n+e.skills.length},0));
-  }else log.push('⚠ Évaluations de compétences indisponibles dans cette session ou cette version de Pawnote.');
+  }else log.push('⚠ Onglet Évaluations inaccessible ou aucune période disponible dans cette session Pawnote.');
   log.push('Requêtes passées par le relais : '+ctx.fetcher.calls());
   return out;
 }

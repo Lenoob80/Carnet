@@ -401,6 +401,8 @@ body.c3notebook #c3sidebar .c3navbtn small{display:none!important}
 body.c3notebook #c3sidebar .c3sidebottom{display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:5px!important;margin:0!important;padding:0!important;border:0!important}
 body.c3notebook #c3sidebar .c3sync{display:none!important}
 body.c3notebook #c3sidebar .c3sidebottom .c3navbtn{font-size:11px!important;padding:7px 9px!important}
+/* En mode Mon carnet, masquer uniquement le raccourci Paramètres du bas de la barre : la page Paramètres reste accessible depuis la navigation générale hors carnet. */
+body.c3notebook #c3sidebar .c3sidebottom > .c3navbtn{display:none!important}
 body.c3notebook #sbar.c3top{position:sticky!important;top:54px!important;margin-left:0!important;z-index:60!important}
 body.c3notebook #app{margin-left:0!important}
 /* En mode concentration, seul le bandeau global disparaît : l'éditeur historique garde son propre panneau pages/sections. */

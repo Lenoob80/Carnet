@@ -377,7 +377,7 @@ function paintPro(){
   el.innerHTML='<div class="prh"><h2>🎓 Pronote</h2><span class="prs">'+esc(st)+'</span><span style="flex:1"></span>'+
     (h?'<a class="btn sm" href="'+qa(h)+'" target="_blank" rel="noopener">↗ Pronote</a>':'')+
     '<button class="btn sm" data-pr="refresh" title="Relire le calendrier">↻ Actualiser</button></div>'+
-    '<div class="prt">'+tabs.map(function(t){return '<button class="'+(PV.tab==t[0]?'on':'')+'" data-pr="tab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div>'+
+    (PV.tab==='set'?'':'<div class="prt">'+tabs.map(function(t){return '<button class="'+(PV.tab==t[0]?'on':'')+'" data-pr="tab" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div>')+
     '<div class="prb">'+body+'</div>';
   el.scrollTop=sc;
 }
