@@ -925,6 +925,48 @@ body.c3notebook.c3focus #main,body.c3notebook.focus #main{height:100%!important;
 @media(max-width:620px){.c3skillform{grid-template-columns:1fr}.c3skillnote{grid-column:auto}.c3skillitem{align-items:flex-start;flex-direction:column}.c3skillactions{width:100%}.c3skillactions select{flex:1;max-width:none}.c3latestitem{gap:7px}.c3latestright strong{font-size:14px}.c3latestnormalized{display:none}}
 </style>
 
+
+<style id="carnet-403-focus-zoom-competences">
+/* Le mode concentration conserve le même panneau interne que le mode normal. */
+body.c3notebook #app,body.c3notebook.c3focus #app,body.c3notebook.focus #app{
+ display:grid!important;grid-template-columns:300px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;height:calc(100dvh - 116px)!important;min-height:420px!important;margin:0!important;overflow:hidden!important;gap:0!important
+}
+body.c3notebook #side,body.c3notebook.c3focus #side,body.c3notebook.focus #side{
+ display:flex!important;grid-column:1!important;grid-row:1!important;flex:0 0 300px!important;flex-direction:column!important;align-items:stretch!important;
+ position:relative!important;inset:auto!important;transform:none!important;width:300px!important;min-width:0!important;max-width:300px!important;
+ height:100%!important;max-height:100%!important;min-height:0!important;overflow:hidden!important;box-sizing:border-box!important
+}
+body.c3notebook #secs,body.c3notebook.c3focus #secs,body.c3notebook.focus #secs{
+ display:flex!important;flex:0 1 42%!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;min-width:0!important;max-width:100%!important;
+ height:auto!important;min-height:0!important;max-height:42%!important;overflow-x:hidden!important;overflow-y:auto!important;box-sizing:border-box!important
+}
+body.c3notebook #secs #nsel,body.c3notebook.c3focus #secs #nsel,body.c3notebook.focus #secs #nsel{
+ display:block!important;flex:0 0 42px!important;width:100%!important;min-width:0!important;max-width:100%!important;height:42px!important;min-height:42px!important;max-height:42px!important;box-sizing:border-box!important
+}
+body.c3notebook #pgs,body.c3notebook.c3focus #pgs,body.c3notebook.focus #pgs{
+ display:block!important;flex:1 1 0!important;grid-column:auto!important;grid-row:auto!important;width:100%!important;min-width:0!important;max-width:100%!important;
+ min-height:0!important;height:auto!important;max-height:none!important;overflow-x:hidden!important;overflow-y:auto!important;box-sizing:border-box!important
+}
+body.c3notebook #main,body.c3notebook.c3focus #main,body.c3notebook.focus #main{
+ display:block!important;grid-column:2!important;grid-row:1!important;width:100%!important;min-width:0!important;max-width:none!important;
+ height:100%!important;max-height:100%!important;min-height:0!important;margin:0!important;padding:0 0 24px!important;overflow:auto!important;box-sizing:border-box!important
+}
+body.c3notebook.c3focus #app,body.c3notebook.focus #app{height:calc(100dvh - 58px)!important}
+body.c3notebook.c3focus #side,body.c3notebook.focus #side{height:100%!important;max-height:100%!important}
+body.c3notebook.c3focus #main,body.c3notebook.focus #main{height:100%!important;max-height:100%!important}
+body.c3notebook #page{zoom:var(--c3-page-zoom,1)}
+.c3zoomtools{display:none;align-items:center;gap:4px;flex:0 0 auto}
+body.c3notebook .c3zoomtools{display:flex}
+.c3zoomtools .btn{min-width:34px;height:34px;padding:4px 9px!important;justify-content:center}
+.c3zoomtools .c3zoomvalue{min-width:58px;font-variant-numeric:tabular-nums;font-size:11px}
+.c3eval-list{display:grid;gap:0}.c3eval-item{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.c3eval-date{align-self:start;padding:8px 6px;text-align:center;border:1px solid var(--line);border-radius:9px;color:var(--muted);font-weight:700;font-size:12px}
+.c3eval-content{min-width:0}.c3eval-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}.c3eval-title b{font-size:14px}.c3eval-title span,.c3eval-meta{font-size:11px;color:var(--muted)}.c3eval-meta{margin-top:4px}.c3eval-content>p{margin:7px 0;color:var(--muted);font-size:12px;white-space:pre-wrap}
+.c3eval-skills{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.c3eval-skill{display:inline-flex;flex-direction:column;gap:2px;min-width:42px;max-width:220px;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}.c3eval-skill b{font-size:12px;text-align:center}.c3eval-skill small{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:760px){body.c3notebook #app,body.c3notebook.c3focus #app,body.c3notebook.focus #app{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto minmax(0,1fr)!important;height:calc(100dvh - 58px)!important;min-height:0!important}body.c3notebook #side,body.c3notebook.c3focus #side,body.c3notebook.focus #side{grid-column:1!important;grid-row:1/span 2!important;display:contents!important;width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important}body.c3notebook #secs,body.c3notebook.c3focus #secs,body.c3notebook.focus #secs{grid-column:1!important;grid-row:1!important;display:flex!important;flex-direction:row!important;align-items:center!important;flex-wrap:nowrap!important;width:100%!important;max-height:58px!important;min-height:48px!important;overflow-x:auto!important;overflow-y:hidden!important}body.c3notebook #secs #nsel,body.c3notebook.c3focus #secs #nsel,body.c3notebook.focus #secs #nsel{flex:0 0 145px!important;width:145px!important;min-width:145px!important;max-width:145px!important}body.c3notebook #pgs,body.c3notebook.c3focus #pgs,body.c3notebook.focus #pgs{grid-column:1!important;grid-row:2!important;display:flex!important;flex-direction:row!important;align-items:center!important;flex-wrap:nowrap!important;width:100%!important;min-height:52px!important;max-height:100px!important;overflow-x:auto!important;overflow-y:hidden!important;border-right:0!important;border-bottom:1px solid var(--line)!important}body.c3notebook #main,body.c3notebook.c3focus #main,body.c3notebook.focus #main{grid-column:1!important;grid-row:3!important;width:100%!important;height:auto!important;max-height:none!important;min-height:0!important;overflow:auto!important}.c3zoomtools .btn{min-width:30px;height:32px;padding:3px 7px!important}.c3eval-item{grid-template-columns:60px minmax(0,1fr);gap:8px}.c3eval-date{font-size:10px;padding:7px 3px}}
+</style>
+
 </head>
 <body>
 <div id="sa"></div>

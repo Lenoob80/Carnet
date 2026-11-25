@@ -136,10 +136,11 @@ function pnGrade(g,subject,id){
     date:d?isoDay(d):isoDay(Date.now()),label:g.comment||g.title||g.description||'',classAvg:pnNum(g.average),classMax:pnNum(g.max!=null&&g.outOf!=null?g.max:null)};
 }
 async function pnFetchAll(ctx,log){
-  var PW=ctx.PW,session=ctx.session,out={events:[],hw:[],grades:[],avgs:[],user:''},now=new Date(),from=weekStart(now);
+  var PW=ctx.PW,session=ctx.session,out={events:[],hw:[],grades:[],avgs:[],evaluations:null,user:''},now=new Date(),from=weekStart(now);
+  var ins=session.instance||{},ures=session.userResource||{},periods=[].concat(ins.periods||ures.periods||[]);
   from.setDate(from.getDate()-7);
   var to=new Date(from);to.setDate(to.getDate()+7*5);
-  log.push('Fonctions de la bibliothèque : '+Object.keys(PW).filter(function(k){return /timetable|assign|homework|grade|overview|login|period|week/i.test(k)}).join(', '));
+  log.push('Fonctions de la bibliothèque : '+Object.keys(PW).filter(function(k){return /timetable|assign|homework|grade|overview|evaluat|login|period|week/i.test(k)}).join(', '));
   log.push('Contenu de la session : '+Object.keys(session).join(', '));
   try{out.user=pnName(session.user)||pnName(session.userResource)||(session.user&&session.user.name)||''}catch(e){}
 
@@ -181,7 +182,7 @@ async function pnFetchAll(ctx,log){
   /* notes et moyennes */
   try{
     if(typeof PW.gradesOverview!='function')throw new Error('fonction de notes introuvable');
-    var ins=session.instance||{},ures=session.userResource||{},periods=[].concat(ins.periods||ures.periods||[]),seen={};
+    var seen={};
     if(!periods.length&&typeof PW.readDefaultPeriodForGradesOverview=='function'){try{periods=[PW.readDefaultPeriodForGradesOverview(session)]}catch(e){}}
     if(!periods.length)throw new Error('périodes introuvables');
     for(var p=0;p<periods.length;p++){
@@ -197,13 +198,38 @@ async function pnFetchAll(ctx,log){
     }
     log.push('✓ Notes : '+out.grades.length+' · moyennes par matière : '+out.avgs.length);
   }catch(e){log.push('✗ Notes : '+(e.message||e))}
+
+  /* Compétences évaluées : Pawnote expose les évaluations et leurs compétences. */
+  if(typeof PW.evaluations==='function'&&periods.length){
+    out.evaluations=[];
+    for(var ep=0;ep<periods.length;ep++){
+      try{
+        var evals=await PW.evaluations(session,periods[ep]);
+        (evals||[]).forEach(function(ev,ei){
+          var date=pnMs(ev.date),skills=(ev.skills||[]).map(function(sk,si){return {
+            id:String(sk.id||('skill-'+si)),order:Number(sk.order)||0,level:String(sk.level||''),
+            abbreviation:String(sk.abbreviation||''),coefficient:Number(sk.coefficient)||1,
+            domainID:String(sk.domainID||''),domainName:String(sk.domainName||''),
+            itemID:String(sk.itemID||''),itemName:String(sk.itemName||''),
+            pillarID:String(sk.pillarID||''),pillarName:String(sk.pillarName||''),
+            pillarPrefixes:Array.isArray(sk.pillarPrefixes)?sk.pillarPrefixes.map(String):[]
+          }}).sort(function(a,b){return a.order-b.order});
+          out.evaluations.push({id:'pn-eval-'+String(ev.id||ep+'-'+ei),source:'pronote',name:String(ev.name||'Évaluation'),
+            subject:pnName(ev.subject)||'Sans matière',teacher:String(ev.teacher||''),coefficient:Number(ev.coefficient)||1,
+            description:String(ev.description||''),levels:Array.isArray(ev.levels)?ev.levels.map(String):[],
+            date:date?isoDay(date):'',skills:skills,period:String(periods[ep].name||'')});
+        });
+      }catch(e){log.push('  compétences période '+(ep+1)+' : '+(e.message||e))}
+    }
+    log.push('✓ Évaluations de compétences : '+out.evaluations.length+' · compétences détaillées : '+out.evaluations.reduce(function(n,e){return n+e.skills.length},0));
+  }else log.push('⚠ Évaluations de compétences indisponibles dans cette session ou cette version de Pawnote.');
   log.push('Requêtes passées par le relais : '+ctx.fetcher.calls());
   return out;
 }
 function pnStore(d){
   var p=PR();
   if(d.events.length)p.events=d.events;
-  p.fetched=Date.now();p.pnhw=d.hw;p.pngr=d.grades;p.pnavg=d.avgs;p.pnuser=d.user||p.pnuser||'';p.pnLinked=true;
+  p.fetched=Date.now();p.pnhw=d.hw;p.pngr=d.grades;p.pnavg=d.avgs;if(Array.isArray(d.evaluations)){p.pneval=d.evaluations;p.pnevalFetched=Date.now()}p.pnuser=d.user||p.pnuser||'';p.pnLinked=true;
   touchPR();
 }
 
@@ -230,7 +256,7 @@ async function pnConnect(mode,creds,demo){
     PN.msg='';
     toast(demo?'Démo : '+data.events.length+' cours, '+data.grades.length+' notes lues (rien enregistré).':'Pronote : '+data.events.length+' cours, '+data.hw.length+' devoirs, '+data.grades.length+' notes.');
     if(PN.noToken)log.push('⚠ Pronote n’a pas fourni de jeton : le mot de passe sera redemandé à chaque connexion.');
-    log.push('Premières données : '+JSON.stringify({cours:data.events.slice(0,1),devoir:data.hw.slice(0,1),note:data.grades.slice(0,1),moyenne:data.avgs.slice(0,1)}).slice(0,1500));
+    log.push('Premières données : '+JSON.stringify({cours:data.events.slice(0,1),devoir:data.hw.slice(0,1),note:data.grades.slice(0,1),moyenne:data.avgs.slice(0,1),competences:data.evaluations&&data.evaluations.slice(0,1)}).slice(0,1800));
   }catch(e){
     PN.msg='⚠ '+pnErr(e);log.push('✗ '+(e&&e.stack?String(e.stack).split('\n').slice(0,3).join(' | '):e));
     if(e&&e.message=='LIB')openLibHelp();
