@@ -2,7 +2,7 @@
    - fichiers du site : réseau d'abord (toujours à jour), copie locale si pas de réseau
    - bibliothèques cdnjs : copie locale d'abord (versions fixes)
    - api.github.com et tout le reste : jamais intercepté, jamais mis en cache */
-var VERSION='carnet-20261125-nav-settings-shortcut-405';
+var VERSION='carnet-20261125-pronote-evaluations-theme-406';
 var SHELL=[
  "./",
  "index.html",
